@@ -1,9 +1,9 @@
 import React from 'react';
 
 /**
- * Camada de Estilos da Página:
- * Pode ser adaptada para styled-components, Tailwind ou CSS Modules.
- * Exporta estilos diretamente para consumo na View sem necessidade de injeção.
+ * Isolated Page Styles
+ * Can be adapted to Tailwind, CSS Modules, or CSS-in-JS.
+ * Exported directly to the View without requiring dependency injection.
  */
 export const styles = {
   container: {
@@ -36,4 +36,3 @@ export const styles = {
     marginTop: 8,
   } as React.CSSProperties,
 };
-

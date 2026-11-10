@@ -1,9 +1,8 @@
 import { AnalyticsProperties } from '../types/analytics.types.js';
 
 /**
- * Contrato de Interface para Facade de Telemetria / Analytics
+ * Interface contract for Telemetry / Analytics Facade
  */
 export interface IAnalyticsFacade {
   trackEvent(name: string, properties?: AnalyticsProperties): void;
 }
-

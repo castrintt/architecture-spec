@@ -13,4 +13,3 @@ export class MockPostgresDatabaseFacade implements IDatabaseFacade {
     return callback(this);
   }
 }
-

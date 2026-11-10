@@ -9,4 +9,3 @@ export const DbOrderRowSchema = z.object({
 });
 
 export type DbOrderRow = z.infer<typeof DbOrderRowSchema>;
-

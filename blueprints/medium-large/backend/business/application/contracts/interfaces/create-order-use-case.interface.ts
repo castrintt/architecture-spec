@@ -1,9 +1,8 @@
 import { CreateOrderInput, CreateOrderOutput } from '../types/create-order.types.js';
 
 /**
- * Contrato de Interface para o Caso de Uso de Criação de Pedido
+ * Interface contract for Create Order Use Case
  */
 export interface ICreateOrderUseCase {
   execute(input: CreateOrderInput): Promise<CreateOrderOutput>;
 }
-

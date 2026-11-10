@@ -1,9 +1,8 @@
 import { OrderItemView } from '../types/order-view.types.js';
 
 /**
- * Contrato de Interface para o Serviço de Aplicação de Pedidos
+ * Interface contract for Orders Application Service
  */
 export interface IOrderApplicationService {
   getOrdersList(): Promise<OrderItemView[]>;
 }
-

@@ -2,13 +2,13 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TYPES } from './types.js';
 
-// Interfaces (Contratos)
+// Contracts (Interfaces)
 import type { IDatabaseFacade } from '../../config/contracts/interfaces/database-facade.interface.js';
 import type { ILoggerFacade } from '../../config/contracts/interfaces/logger-facade.interface.js';
 import type { IOrderRepository } from '../repository/contracts/interfaces/order-repository.interface.js';
 import type { ICreateOrderUseCase } from '../application/contracts/interfaces/create-order-use-case.interface.js';
 
-// Implementações Concretas
+// Concrete Implementations
 import { MockPostgresDatabaseFacade } from '../../config/facades/database.facade.js';
 import { JsonLoggerFacade } from '../../config/facades/logger.facade.js';
 import { OrderPostgresRepository } from '../repository/repositories/order.postgres.repository.js';
@@ -16,7 +16,7 @@ import { CreateOrderUseCase } from '../application/use-cases/create-order.use-ca
 import { OrderController } from '../../src/controllers/order.controller.js';
 
 /**
- * Container de Inversão de Controle com InversifyJS (Backend)
+ * Backend Inversion of Control Container (InversifyJS)
  */
 const container = new Container();
 
@@ -30,8 +30,7 @@ container.bind<IOrderRepository>(TYPES.OrderRepository).to(OrderPostgresReposito
 // 3. Application Use Cases
 container.bind<ICreateOrderUseCase>(TYPES.CreateOrderUseCase).to(CreateOrderUseCase).inSingletonScope();
 
-// 4. Controllers (Transient para cada requisição)
+// 4. Controllers (Transient per HTTP request)
 container.bind<OrderController>(TYPES.OrderController).to(OrderController).inTransientScope();
 
 export { container };
-

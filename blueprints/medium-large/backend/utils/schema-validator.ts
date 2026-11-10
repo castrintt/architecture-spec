@@ -14,14 +14,14 @@ export class SchemaValidationError extends Error {
     public readonly issues: z.ZodIssue[],
     public readonly rawData: unknown
   ) {
-    super(`[Contrato Violado em ${contextName}] O payload não respeita o Schema Zod esperado.`);
+    super(`[Contract Violation in ${contextName}] Payload violates expected Zod Schema.`);
     this.name = 'SchemaValidationError';
   }
 }
 
 /**
- * Função utilitária pura para executar safeParse do Zod com logging estruturado
- * e severidades no Backend. Localizada em utils/ na camada mais externa.
+ * Pure utility function to execute Zod safeParse with structured logging
+ * and severity levels. Located in utils/ at the outermost layer.
  */
 export function safeParseWithLogging<T>(
   schema: z.ZodType<T>,
@@ -47,9 +47,9 @@ export function safeParseWithLogging<T>(
     };
 
     if (severity === 'warn') {
-      console.warn(`⚠️ [${contextName}] Divergência no Schema Zod detectada:`, JSON.stringify(errorDetails));
+      console.warn(`⚠️ [${contextName}] Zod Schema Divergence Detected:`, JSON.stringify(errorDetails));
     } else {
-      console.error(`🚨 [${contextName}] Falha Crítica de Contrato Zod detectada:`, JSON.stringify(errorDetails));
+      console.error(`🚨 [${contextName}] Critical Zod Contract Failure Detected:`, JSON.stringify(errorDetails));
     }
 
     if (throwOnError) {
@@ -59,4 +59,3 @@ export function safeParseWithLogging<T>(
 
   return (result as { success: true; data: T }).data;
 }
-

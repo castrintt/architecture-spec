@@ -6,8 +6,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * Camada src/design-system:
- * Componentes base reutilizáveis em qualquer parte da View.
+ * Design System Base Component:
+ * Reusable across any View layer.
  */
 export function Button({ variant = 'primary', children, style, ...props }: ButtonProps) {
   const bg = variant === 'danger' ? theme.colors.danger : theme.colors.primary;
@@ -30,4 +30,3 @@ export function Button({ variant = 'primary', children, style, ...props }: Butto
     </button>
   );
 }
-

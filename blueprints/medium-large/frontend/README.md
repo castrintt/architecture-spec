@@ -1,64 +1,59 @@
-# 🟡🔴 Blueprint: Frontend para Projetos Médios e Grandes (Clean MVVM Adaptado)
+# 🟡🔴 Blueprint: Frontend for Medium & Large Projects (Clean MVVM Adapted)
 
-Arquitetura desenhada para evitar microsserviços e permitir que múltiplos desenvolvedores trabalhem sem acoplamento e sem overengineering.
+Engineered for enterprise scalability, avoiding microservices and enabling multiple engineers to work in parallel without coupling or overengineering.
 
 ---
 
-## 🏗️ Divisão das 4 Macro-Camadas
+## 🏗️ The 4 Macro-Layers Breakdown
 
-### 1. `business/` (A inteligência da aplicação desacoplada da UI)
+### 1. `business/` (UI-Independent Business Intelligence)
 
-Todas as subcamadas de negócio (exceto `ioc/` e `src/`) seguem a separação rigorosa entre contratos e implementações:
+All business sub-layers (except `ioc/` and `src/`) enforce strict separation between contracts and implementations:
 - `contracts/`:
-  - `interfaces/`: Contratos de interface TypeScript puros (`IOrderApiGateway`, `IOrderApplicationService`, `ILocalCacheRepository`, `IOrderEntity`).
-  - `types/`: Conversão e validação com Zod a partir do tipo cru nativo, exportando **ambos** (o tipo cru de rede e o tipo inferido do Zod `z.infer<typeof ...>`).
-- Implementações:
-  - `api/gateway/`: Classes de Gateway HTTP (`OrderApiGateway`) que implementam as interfaces e consomem o Zod com `safeParseWithLogging`.
-  - `application/services/`: Serviços de orquestração de tela (`OrderApplicationService`).
-  - `repository/repositories/`: Repositórios de persistência interna (`LocalStorageRepository`).
-  - `domain/entities/`: Entidades ricas/anêmicas de domínio (`OrderEntity`).
-  - `shared/adapters/`: Padrões de projeto (`OrderDtoToEntityAdapter`).
-- `ioc/`: Inversão de Controle com **InversifyJS**. Define os tokens (`TYPES` via `Symbol.for`) e centraliza o `Container` ligando as interfaces aos singletons concretos.
+  - `interfaces/`: Pure TypeScript interface contracts (`IOrderApiGateway`, `IOrderApplicationService`, `ILocalCacheRepository`, `IOrderEntity`).
+  - `types/`: Conversion and runtime validation via Zod starting from raw network types, exporting **both** (raw network type and inferred Zod type `z.infer<typeof ...>`).
+- Implementations:
+  - `api/gateway/`: Gateway classes (`OrderApiGateway`) implementing interfaces and consuming Zod with `safeParseWithLogging`.
+  - `application/services/`: Screen orchestration services (`OrderApplicationService`).
+  - `repository/repositories/`: Local persistence adapters (`LocalStorageRepository`).
+  - `domain/entities/`: Domain entities (`OrderEntity`).
+  - `shared/adapters/`: Design patterns (`OrderDtoToEntityAdapter`).
+- `ioc/`: Inversion of Control with **InversifyJS**. Defines tokens (`TYPES` via `Symbol.for`) and binds interfaces to concrete singletons.
 
-### 2. `config/` (Fachadas para Libs Externas)
-Segue a mesma estrutura de contratos:
-- `contracts/interfaces/`: Contratos agnósticos (`IHttpFacade`, `IAnalyticsFacade`).
-- `contracts/types/`: Tipos nativos e schemas de resposta (`HttpResponse<T>`, `AnalyticsProperties`).
-- `facades/`: Implementações isoladas (`NativeHttpFacade`, `ConsoleAnalyticsFacade`). Nenhuma tela ou service conhece Axios, Fetch nativo ou Sentry diretamente.
+### 2. `config/` (Facades for External Libraries)
+- `contracts/interfaces/`: Framework-agnostic contracts (`IHttpFacade`, `IAnalyticsFacade`).
+- `contracts/types/`: Types and response schemas (`HttpResponse<T>`, `AnalyticsProperties`).
+- `facades/`: Isolated implementations (`NativeHttpFacade`, `ConsoleAnalyticsFacade`). No screen or service imports Axios, Fetch, or Sentry directly.
 
-### 3. `src/` (A camada de View / Apresentação)
+### 3. `src/` (Presentation / View Layer)
 
-#### 📐 Padrão Obrigatório para Páginas (`src/pages/`):
-Cada página segue estritamente a segregação em 4 arquivos especialistas (conforme demonstrado em [`src/pages/checkout/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/src/pages/checkout)):
-- `[nome].base.tsx`: **Composition Root / Container**. Injeta os serviços reais da camada `business` no controller e envelopa a View passando `{ states, actions }`. É o arquivo consumido pelas rotas.
-- `[nome].controller.tsx`: **ViewModel**. Contém a lógica de tela e hooks, recebendo serviços via parâmetros de injeção. Retorna rigorosamente dois objetos: `states` (dados prontos para exibição) e `actions` (funções e callbacks).
-- `[nome].view.tsx`: **UI Burra**. Não conhece serviços nem rotas; recebe apenas `states` e `actions` via props. Perfeita para Storybook e testes de regressão visual.
-- `[nome].styles.ts`: Estilização isolada da tela.
+#### 📐 Mandatory Pattern for Pages (`src/pages/`):
+Every page strictly follows the 4-file specialist segregation (demonstrated in [`src/pages/checkout/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/src/pages/checkout)):
+- `[name].base.tsx`: **Composition Root / Container**. Injects concrete `business` services into the controller and wraps the View passing `{ states, actions }`. Consumed by routes.
+- `[name].controller.tsx`: **ViewModel**. Houses screen logic and hooks, receiving dependencies via parameter injection. Returns strictly two objects: `states` and `actions`.
+- `[name].view.tsx`: **Dumb UI**. Unaware of services or routing; receives only `states` and `actions` via props. Perfect for Storybook and visual regression testing.
+- `[name].styles.ts`: Isolated screen styling.
 
-> ⚠️ **Regra de Ouro Corporativa:** Esse quarteto é **obrigatório para Páginas**, mas **proibido para Componentes Reutilizáveis simples** (`src/components` e `src/design-system`), onde componentes diretos em 1 ou 2 arquivos evitam burocracia e fadiga de arquivos (*file fatigue*).
+> ⚠️ **Corporate Golden Rule:** The Quartet pattern is **mandatory for Pages**, but **strictly forbidden for Simple Reusable Components** (`src/components` and `src/design-system`), where direct 1-file components prevent file fatigue.
 
-- `components/`: Componentes visuais compostos.
-- `design-system/`: Componentes atômicos e tokens (Botões, Inputs, Modais base).
-- `globals/`: Temas de cores, estilos CSS globais e constantes visuais.
-- `routes/`: Definição de rotas e navegação.
-- `store/`: Estado compartilhado entre telas (agnóstico a framework, ex: sessão).
-- `guards/`: Proteção e bloqueio de rotas privadas (RBAC, autenticação).
-- `hooks/`: Conectores agnósticos entre a camada de Business e a View (estilo Context/Composables).
+- `components/`: Composite UI components.
+- `design-system/`: Atomic tokens and base components (Buttons, Inputs, Modals).
+- `globals/`: Themes, global CSS variables, visual constants.
+- `routes/`: Centralized route tables.
+- `store/`: Low-frequency shared state across screens (auth/session).
+- `guards/`: Route authorization guards (RBAC).
+- `hooks/`: Framework connectors bridging View and Store.
 
-### 3. `config/` (Fachadas para Libs Externas)
-- Isola pacotes NPM usando o padrão **Facade**. Se a biblioteca de HTTP (Axios), de Telemetria (Sentry) ou de Toast mudar, altera-se apenas o arquivo de fachada em `config/`, sem tocar na UI.
-
-### 4. `utils/` (Funções Puras Globais)
-- `schema-validator.ts`: Função auxiliar `safeParseWithLogging` para validação com Zod e emissão de logs estruturados com severidades (`warn`/`error`) em caso de quebra de contrato na camada de API.
-- `calculations.ts`: Helpers, cálculos matemáticos e formatações de moedas e datas acessíveis por qualquer camada.
+### 4. `utils/` (Pure Global Utilities)
+- `schema-validator.ts`: Pure helper `safeParseWithLogging` for Zod schema validation with structured severity logging (`warn`/`error`).
+- `calculations.ts`: Pure helpers for currency, formatting, and numeric operations.
 
 ---
 
-## ⚖️ O que escala vs. O que não escala
-- **O que escala:**
-  - Telas podem ser trocadas ou refatoradas sem alterar uma linha da lógica de negócios.
-  - Testes unitários rápidos rodando em Node puro sem precisar montar DOM.
-  - Crescimento de equipe sem conflitos de merge.
-- **O que NÃO escala:**
-  - Usar esta arquitetura em um projeto Tier 1 (Small) com 1 dev para um formulário simples (gera excesso de arquivos para pouca regra).
-
+## ⚖️ What Scales vs. What Does NOT Scale
+- **What Scales:**
+  - Views can be completely redesigned or swapped without touching a single line of business logic.
+  - Blazing-fast unit tests running in pure Node without mounting DOM.
+  - Squad growth without Git merge collisions.
+- **What Does NOT Scale:**
+  - Applying this full structure to a 1-developer 2-screen prototype (Tier 1: Small) creates unnecessary initial overhead.

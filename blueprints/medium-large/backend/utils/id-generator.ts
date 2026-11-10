@@ -1,9 +1,8 @@
 import crypto from 'node:crypto';
 
 /**
- * Utilitário puro de geração de IDs padronizados com prefixo de domínio.
+ * Pure utility to generate standardized domain-prefixed IDs.
  */
 export function generatePrefixedId(prefix: string): string {
   return `${prefix}_${crypto.randomUUID().replace(/-/g, '')}`;
 }
-

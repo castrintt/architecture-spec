@@ -1,8 +1,7 @@
 import { authStore } from '../store/auth.store.js';
 
 /**
- * Camada src/guard:
- * Segurança de rotas privadas e autorização por perfis (RBAC).
+ * Route authorization guard for private pages (RBAC).
  */
 export function canActivatePrivate(requiredRole?: string): boolean {
   const { isAuthenticated, user } = authStore.getState();
@@ -17,4 +16,3 @@ export function canActivatePrivate(requiredRole?: string): boolean {
 
   return true;
 }
-

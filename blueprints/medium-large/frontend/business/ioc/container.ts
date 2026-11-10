@@ -2,14 +2,14 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TYPES } from './types.js';
 
-// Interfaces (Contratos)
+// Contracts (Interfaces)
 import type { IHttpFacade } from '../../config/contracts/interfaces/http-facade.interface.js';
 import type { IAnalyticsFacade } from '../../config/contracts/interfaces/analytics-facade.interface.js';
 import type { ILocalCacheRepository } from '../repository/contracts/interfaces/local-cache-repository.interface.js';
 import type { IOrderApiGateway } from '../api/contracts/interfaces/order-gateway.interface.js';
 import type { IOrderApplicationService } from '../application/contracts/interfaces/order-service.interface.js';
 
-// Implementações Concretas
+// Concrete Implementations
 import { NativeHttpFacade } from '../../config/facades/http.facade.js';
 import { ConsoleAnalyticsFacade } from '../../config/facades/analytics.facade.js';
 import { LocalStorageRepository } from '../repository/repositories/local-storage.repository.js';
@@ -17,12 +17,12 @@ import { OrderApiGateway } from '../api/gateway/order.gateway.js';
 import { OrderApplicationService } from '../application/services/order.service.js';
 
 /**
- * Container de Inversão de Controle com InversifyJS:
- * Binda contratos de interface às suas implementações concretas.
+ * InversifyJS Inversion of Control Container:
+ * Binds interface contracts to concrete implementations.
  */
 const container = new Container();
 
-// 1. Config / Facades (Singletons de infraestrutura)
+// 1. Config / Facades (Infrastructure Singletons)
 container.bind<IHttpFacade>(TYPES.HttpFacade).to(NativeHttpFacade).inSingletonScope();
 container.bind<IAnalyticsFacade>(TYPES.AnalyticsFacade).to(ConsoleAnalyticsFacade).inSingletonScope();
 

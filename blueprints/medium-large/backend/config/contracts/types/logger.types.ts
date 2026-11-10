@@ -9,4 +9,3 @@ export interface RawLogPayload {
   timestamp: string;
   context?: Record<string, unknown>;
 }
-

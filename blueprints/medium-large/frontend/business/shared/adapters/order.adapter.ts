@@ -3,8 +3,7 @@ import { OrderRawDTO } from '../../api/contracts/types/order.types.js';
 import { IOrderAdapter } from '../contracts/interfaces/order-adapter.interface.js';
 
 /**
- * Camada business/shared/adapters:
- * Implementação do padrão Adapter para converter DTOs de API em Entidades de Domínio.
+ * Adapter Pattern Implementation: transforms API DTOs into Domain Entities.
  */
 export class OrderDtoToEntityAdapter implements IOrderAdapter {
   toDomain(dto: OrderRawDTO): OrderEntity {
@@ -15,4 +14,3 @@ export class OrderDtoToEntityAdapter implements IOrderAdapter {
     return new OrderEntity(dto.id, dto.total_cents, dto.status);
   }
 }
-

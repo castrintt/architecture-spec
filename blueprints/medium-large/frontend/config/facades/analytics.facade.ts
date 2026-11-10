@@ -10,4 +10,3 @@ export class ConsoleAnalyticsFacade implements IAnalyticsFacade {
     }
   }
 }
-

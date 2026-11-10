@@ -8,9 +8,7 @@ export interface UserSession {
 type Listener<T> = (value: T) => void;
 
 /**
- * Camada src/store:
- * Store agnóstica a framework para estado compartilhado entre telas de baixa frequência (sessão, usuário).
- * Pode ser plugada em React, Vue ou Vanilla JS sem acoplamento a bibliotecas pesadas.
+ * Framework-Agnostic Observable Store for low-frequency global state (session, auth).
  */
 class ObservableStore<T> {
   private listeners: Set<Listener<T>> = new Set();
@@ -45,4 +43,3 @@ export const authStore = new ObservableStore<AuthState>({
   user: null,
   isAuthenticated: false,
 });
-

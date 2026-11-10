@@ -16,7 +16,7 @@ export class LocalStorageRepository<T = unknown> implements ILocalCacheRepositor
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (err) {
-      console.warn('Erro ao salvar no storage local', err);
+      console.warn('Failed to save to local storage', err);
     }
   }
 
@@ -24,4 +24,3 @@ export class LocalStorageRepository<T = unknown> implements ILocalCacheRepositor
     localStorage.removeItem(key);
   }
 }
-

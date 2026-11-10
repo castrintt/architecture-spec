@@ -8,8 +8,8 @@ import { useAuthContext } from '../../hooks/use-auth-context.js';
 import { canActivatePrivate } from '../../guards/auth.guard.js';
 
 /**
- * Camada src/pages (Privada):
- * Protegida por Guard e orquestrada consumindo a service resolvida via Inversify Container.
+ * Private Page: Dashboard
+ * Protected by authorization guard and resolves application service via InversifyJS.
  */
 export function DashboardPage() {
   const { user } = useAuthContext();
@@ -18,14 +18,13 @@ export function DashboardPage() {
 
   useEffect(() => {
     if (isAuthorized) {
-      // Resolução via contrato de interface no InversifyJS
       const orderService = container.get<IOrderApplicationService>(TYPES.OrderApplicationService);
       orderService.getOrdersList().then(setOrders).catch(console.error);
     }
   }, [isAuthorized]);
 
   if (!isAuthorized) {
-    return <div style={{ padding: 40, color: 'red' }}>Acesso não autorizado. Faça login primeiro.</div>;
+    return <div style={{ padding: 40, color: 'red' }}>Unauthorized access. Please sign in first.</div>;
   }
 
   const handleCancel = (orderId: string) => {
@@ -34,12 +33,12 @@ export function DashboardPage() {
 
   return (
     <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'sans-serif' }}>
-      <h1>Painel Operacional</h1>
-      <p>Bem-vindo, <strong>{user?.name}</strong></p>
+      <h1>Operational Dashboard</h1>
+      <p>Welcome, <strong>{user?.name}</strong></p>
 
-      <h3>Seus Pedidos</h3>
+      <h3>Your Orders</h3>
       {orders.length === 0 ? (
-        <p>Nenhum pedido carregado.</p>
+        <p>No orders loaded.</p>
       ) : (
         orders.map((order) => (
           <OrderSummary key={order.id} order={order} onCancel={handleCancel} />

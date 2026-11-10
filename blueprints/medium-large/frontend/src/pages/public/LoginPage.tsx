@@ -3,8 +3,7 @@ import { Button } from '../../design-system/Button.js';
 import { authStore } from '../../store/auth.store.js';
 
 /**
- * Camada src/pages (Pública):
- * Tela de login simples.
+ * Public Page: Login
  */
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,7 +14,7 @@ export function LoginPage() {
       isAuthenticated: true,
       user: {
         userId: 'usr_123',
-        name: email.split('@')[0] || 'Usuário',
+        name: email.split('@')[0] || 'User',
         token: 'jwt_mock_token',
         roles: ['ADMIN'],
       },
@@ -24,19 +23,18 @@ export function LoginPage() {
 
   return (
     <div style={{ maxWidth: 400, margin: '80px auto', fontFamily: 'sans-serif' }}>
-      <h2>Acesso ao Sistema</h2>
+      <h2>Sign In to Platform</h2>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <input
           type="email"
-          placeholder="Seu e-mail institucional"
+          placeholder="Corporate email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           style={{ padding: 8 }}
         />
-        <Button type="submit">Entrar</Button>
+        <Button type="submit">Sign In</Button>
       </form>
     </div>
   );
 }
-

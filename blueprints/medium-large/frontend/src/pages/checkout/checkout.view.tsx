@@ -17,19 +17,19 @@ export interface CheckoutViewProps {
 }
 
 /**
- * Camada View (Apresentação Pura / Burra):
- * - Não sabe de onde vêm os dados (se é HTTP, Mock, Storage ou Cache).
- * - Não possui regras de negócio.
- * - Recebe tudo via props: 'states' para exibição e 'actions' para eventos.
- * - Perfeita para Storybook e testes de regressão visual.
+ * View Layer (Pure / Dumb Presentation):
+ * - Unaware of data source (HTTP, Mock, Cache, or LocalStorage).
+ * - Contains zero business rules.
+ * - Receives everything via props: 'states' for display and 'actions' for event dispatching.
+ * - Perfect for Storybook and visual regression testing.
  */
 export function CheckoutView({ states, actions }: CheckoutViewProps) {
   if (states.isSuccess) {
     return (
       <div style={styles.container}>
-        <h2>🎉 Pedido Confirmado!</h2>
-        <p>Identificador: <strong>{states.orderId}</strong></p>
-        <p>Seu pagamento foi aprovado com sucesso.</p>
+        <h2>🎉 Order Confirmed!</h2>
+        <p>Identifier: <strong>{states.orderId}</strong></p>
+        <p>Your payment has been successfully processed.</p>
       </div>
     );
   }
@@ -37,12 +37,12 @@ export function CheckoutView({ states, actions }: CheckoutViewProps) {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <h2>Finalizar Compra</h2>
-        <p style={{ color: '#6B7280', margin: 0 }}>Pedido #{states.orderId}</p>
+        <h2>Finalize Purchase</h2>
+        <p style={{ color: '#6B7280', margin: 0 }}>Order #{states.orderId}</p>
       </header>
 
       <div style={styles.totalRow}>
-        <span>Total a Pagar:</span>
+        <span>Total Due:</span>
         <span>{states.formattedTotal}</span>
       </div>
 
@@ -50,7 +50,7 @@ export function CheckoutView({ states, actions }: CheckoutViewProps) {
         <div style={styles.feedbackError}>
           <p>❌ {states.errorMessage}</p>
           <button onClick={actions.handleRetry} style={{ cursor: 'pointer' }}>
-            Tentar novamente
+            Try Again
           </button>
         </div>
       )}
@@ -61,10 +61,9 @@ export function CheckoutView({ states, actions }: CheckoutViewProps) {
           disabled={states.isProcessing}
           style={{ width: '100%', padding: '12px 0' }}
         >
-          {states.isProcessing ? 'Processando...' : 'Confirmar e Pagar'}
+          {states.isProcessing ? 'Processing Payment...' : 'Confirm & Pay'}
         </Button>
       </div>
     </div>
   );
 }
-

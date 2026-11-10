@@ -8,9 +8,9 @@ import { ICreateOrderUseCase } from '../contracts/interfaces/create-order-use-ca
 import { CreateOrderInput, CreateOrderOutput } from '../contracts/types/create-order.types.js';
 
 /**
- * Caso de Uso: Criação de Pedido
- * Como o domínio é ANÊMICO, as regras de validação de fluxo e a orquestração
- * da entidade residem aqui. A entidade é apenas um portador de estado.
+ * Use Case: Create Order
+ * In an Anemic Domain, validation logic and entity orchestration reside here.
+ * The entity is purely a state and data carrier.
  */
 @injectable()
 export class CreateOrderUseCase implements ICreateOrderUseCase {
@@ -20,9 +20,9 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
   ) {}
 
   async execute(input: CreateOrderInput): Promise<CreateOrderOutput> {
-    this.logger.info('Iniciando criação de pedido', { customerId: input.customerId });
+    this.logger.info('Initiating order creation', { customerId: input.customerId });
 
-    // Regra de Negócio: criação da entidade anêmica com estado inicial PENDING
+    // Business rule: instantiate anemic entity with initial status PENDING
     const order = new OrderEntity({
       id: generatePrefixedId('ord'),
       customerId: input.customerId,
@@ -32,7 +32,7 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
 
     await this.orderRepository.save(order);
 
-    this.logger.info('Pedido salvo com sucesso', { orderId: order.id, status: order.status });
+    this.logger.info('Order successfully created and saved', { orderId: order.id, status: order.status });
 
     return {
       orderId: order.id,
@@ -40,4 +40,3 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     };
   }
 }
-

@@ -15,10 +15,10 @@ export interface HttpResponse {
 }
 
 /**
- * Controller HTTP de Pedidos:
- * Adaptador de entrada da Clean Architecture. Recebe a requisição,
- * valida rigidamente o payload via Zod com logging estruturado,
- * e delega para o Caso de Uso.
+ * Orders HTTP Controller:
+ * Inbound adapter of Clean Architecture. Receives HTTP request,
+ * validates incoming payload via Zod with structured logging,
+ * and delegates to the Use Case.
  */
 @injectable()
 export class OrderController {
@@ -28,7 +28,6 @@ export class OrderController {
 
   async handleCreate(req: HttpRequest): Promise<HttpResponse> {
     try {
-      // Validação do contrato de entrada usando safeParseWithLogging
       const validatedInput = safeParseWithLogging(CreateOrderInputSchema, req.body, {
         contextName: 'OrderController.handleCreate',
         severity: 'warn',
@@ -45,13 +44,12 @@ export class OrderController {
       return {
         statusCode: 400,
         body: {
-          type: 'https://api.empresa.com/errors/invalid-payload',
-          title: 'Payload inválido',
+          type: 'https://api.company.com/errors/invalid-payload',
+          title: 'Invalid Payload',
           status: 400,
-          detail: err instanceof Error ? err.message : 'Erro na requisição',
+          detail: err instanceof Error ? err.message : 'Bad request',
         },
       };
     }
   }
 }
-

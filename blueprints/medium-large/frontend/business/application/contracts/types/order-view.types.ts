@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * 1. Tipos Crus Nativos para a View
+ * 1. Raw Native Types for the View
  */
 export interface RawOrderItemView {
   id: string;
@@ -11,7 +11,7 @@ export interface RawOrderItemView {
 }
 
 /**
- * 2. Schema Zod de validação do modelo de visualização
+ * 2. Zod Schema validating ViewModel shape
  */
 export const OrderItemViewSchema = z.object({
   id: z.string().min(1),
@@ -23,7 +23,6 @@ export const OrderItemViewSchema = z.object({
 export const OrderItemViewListSchema = z.array(OrderItemViewSchema);
 
 /**
- * 3. Tipagem inferida exportada junto com o tipo cru
+ * 3. Inferred ViewModel Type exported with native type
  */
 export type OrderItemView = z.infer<typeof OrderItemViewSchema>;
-

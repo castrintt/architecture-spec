@@ -1,33 +1,33 @@
-# 🟢 Blueprint: Small (Frontend - Monólito Single-File)
+# 🟢 Blueprint: Small (Frontend - Single-File Monolith)
 
-Projetos pequenos (MVPs, ferramentas internas, 1 a 2 desenvolvedores).
+Tailored for small projects (MVPs, internal tools, proofs of concept, 1 to 2 developers).
 
 ---
 
-## 🎯 Filosofia: Monólito em Componente Único (Single-File Component)
+## 🎯 Philosophy: Single-File Component Monolith
 
-Em projetos pequenos, **não utilizamos separação de Base, Controller e View**. Um único arquivo gerencia seu próprio estado, chama a API diretamente e renderiza o JSX.
+In small projects, **we do not split components across Base, Controller, and View files**. A single file manages its local state, executes API calls, and renders JSX.
 
 ```text
 src/
 ├── api/
-│   └── client.ts         # Chamadas fetch/axios diretas
+│   └── client.ts         # Direct fetch/axios HTTP client
 ├── components/
-│   └── ItemCard.tsx      # Componente direto (estilo + lógica + JSX no mesmo arquivo)
+│   └── ItemCard.tsx      # Direct component (styles + logic + JSX together)
 └── pages/
-    └── HomePage.tsx      # Página monolítica (estado + chamada + renderização direta)
+    └── HomePage.tsx      # Monolithic page (state + fetch + rendering)
 ```
 
 ---
 
-## ⚖️ O que escala vs. O que não escala
+## ⚖️ What Scales vs. What Does NOT Scale
 
-- **O que escala:**
-  - **Velocidade pura:** cria-se uma tela inteira em 1 arquivo sem cerimônia.
-  - **Zero burocracia:** sem injeção de dependência complexa, sem duplicar tipos de `states` e `actions`.
-  - **Manutenção trivial para 1 dev:** tudo o que a tela faz está visível de cima a baixo em 50 linhas.
+- **What Scales:**
+  - **Pure delivery speed:** build an entire page in a single file without ceremony.
+  - **Zero bureaucracy:** no dependency injection boilerplate, no duplicated types.
+  - **Effortless comprehension for 1 dev:** the entire screen flow is readable top-to-bottom in 50 lines.
 
-- **O que NÃO escala:**
-  - Se a tela começar a ter muitas regras e filtros, o arquivo fica gigante (300+ linhas).
-  - Testes isolados de lógica exigem renderizar o componente inteiro no Testing Library.
-  - Mais de 2 desenvolvedores editando a mesma tela geram conflitos constantes de merge.
+- **What Does NOT Scale:**
+  - As business rules multiply, the file grows into a hard-to-maintain 300+ line monolith.
+  - Testing business logic in isolation requires rendering the full DOM with Testing Library.
+  - Multiple developers editing the same file experience frequent Git merge conflicts.

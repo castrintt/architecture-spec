@@ -1,7 +1,6 @@
 /**
- * Tokens de Injeção do InversifyJS (Symbols):
- * Evitam acoplamento direto com as classes concretas, permitindo
- * injetar abstrações/interfaces em qualquer lugar da aplicação.
+ * InversifyJS Dependency Injection Tokens (Symbols)
+ * Prevents tight coupling to concrete classes and allows interface-first injection.
  */
 export const TYPES = {
   // Config / Facades
@@ -17,4 +16,3 @@ export const TYPES = {
   // Application Services / Use Cases
   OrderApplicationService: Symbol.for('OrderApplicationService'),
 } as const;
-

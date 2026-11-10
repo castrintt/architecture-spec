@@ -13,8 +13,8 @@ import {
 } from '../contracts/types/order.types.js';
 
 /**
- * Implementação do Gateway de Pedidos
- * Valida contratos com Zod e emite logs estruturados com severidades corretas.
+ * Orders API Gateway Implementation
+ * Validates contracts with Zod and emits structured severity logs.
  */
 @injectable()
 export class OrderApiGateway implements IOrderApiGateway {
@@ -32,7 +32,6 @@ export class OrderApiGateway implements IOrderApiGateway {
   }
 
   async createOrder(payload: CreateOrderPayload): Promise<CreateOrderResponse> {
-    // Valida o payload de saída antes de enviar
     const validatedPayload = safeParseWithLogging(CreateOrderPayloadSchema, payload, {
       contextName: 'OrderApiGateway.createOrder.requestPayload',
       severity: 'error',
@@ -46,4 +45,3 @@ export class OrderApiGateway implements IOrderApiGateway {
     });
   }
 }
-

@@ -1,251 +1,251 @@
 # 🏛️ Architecture Decision Catalog & Blueprints
 
-> **Repositório de Referência Arquitetural Corporativa**  
-> Um guia prático, opinativo e fundamentado para orientar desenvolvedores e lideranças técnicas na escolha da arquitetura ideal para cada porte de projeto (Pequenos vs. Médios/Grandes), abrangendo **Frontend** e **Backend**.
+> **Corporate Architectural Reference Repository**  
+> A practical, opinionated, and well-grounded guide to guide developers and technical leadership in selecting the ideal architecture for each project scope (Small vs. Medium/Large), covering both **Frontend** and **Backend**.
 
 ---
 
-## 🎯 Por que este repositório existe?
+## 🎯 Why Does This Repository Exist?
 
-No desenvolvimento de software, existem dois extremos prejudiciais:
-1. **Overengineering (Complexidade Acidental):** Aplicar microsserviços, 15 camadas de abstração e dezenas de arquivos em um projeto simples ou MVP. O time gasta mais tempo gerenciando "cola" de arquitetura do que entregando valor.
-2. **Underengineering (Código Espaguete):** Tratar projetos críticos de médio e grande porte como scripts rápidos, misturando chamadas de rede, regras de negócio e renderização no mesmo lugar. O sistema não aguenta concorrência, não é testável e quebra a cada refatoração.
+In software engineering, teams often oscillate between two harmful extremes:
+1. **Overengineering (Accidental Complexity):** Introducing microservices, 15 layers of abstraction, and dozens of files for a simple project or early MVP. Teams spend more time maintaining architectural boilerplate than shipping real business value.
+2. **Underengineering (Spaghetti Code):** Treating critical medium-to-large projects as throwaway scripts, mixing network requests, business rules, and UI rendering in the same place. The system crumbles under concurrency, lacks automated testability, and breaks with every refactor.
 
-Este repositório estabelece **dois modelos claros e documentados**, explicando o **propósito**, os **ganhos** e os **trade-offs** de cada escolha técnica.
+This repository establishes **two clear and documented architectural models**, breaking down the **purpose**, **benefits**, and **trade-offs** of each technical decision.
 
 ---
 
-## 🧭 Mapa Geral da Estrutura
+## 🧭 Repository Structure Overview
 
 ```text
 blueprints/
-├── small/                                  # TIER 1: MVPs, ferramentas internas, POCs (1-2 devs)
-│   ├── frontend/                           # Padrão Monólito Single-File
-│   └── backend/                            # Padrão Monólito Minimalista Direto
+├── small/                                  # TIER 1: MVPs, internal tooling, POCs (1-2 devs)
+│   ├── frontend/                           # Single-File Monolith Pattern
+│   └── backend/                            # Direct Minimalist Monolith Pattern
 │
-└── medium-large/                           # TIER 2 & 3: Projetos corporativos contínuos e escaláveis
-    ├── frontend/                           # Clean MVVM com IoC (Inversify) e Zod
-    │   ├── business/                       # Inteligência desacoplada da UI (api, application, repository, domain, shared, ioc)
-    │   ├── src/                            # Camada de View (pages com quarteto base-controller-view-styles, components, etc.)
-    │   ├── config/                         # Fachadas (Facades) para libs externas (HTTP, Analytics)
-    │   └── utils/                          # Validação segura (safeParseWithLogging) e helpers puros
+└── medium-large/                           # TIER 2 & 3: Scalable, long-term corporate projects
+    ├── frontend/                           # Clean MVVM with IoC (InversifyJS) & Zod
+    │   ├── business/                       # Decoupled business logic (api, application, repository, domain, shared, ioc)
+    │   ├── src/                            # Presentation/View layer (pages with base-controller-view-styles quartet, components, etc.)
+    │   ├── config/                         # Facades for external libraries (HTTP, Analytics)
+    │   └── utils/                          # Schema validation (safeParseWithLogging) and pure utilities
     │
-    └── backend/                            # Clean Architecture com Domínio Anêmico (Simetria Total com o Front)
-        ├── business/                       # Núcleo desacoplado de HTTP (domain anêmico, use-cases, repository, ioc)
-        ├── src/                            # Entrega HTTP (controllers com Zod, routes, middlewares)
-        ├── config/                         # Fachadas para infraestrutura (database, logger)
-        └── utils/                          # Validação segura (safeParseWithLogging) e id-generator
+    └── backend/                            # Clean Architecture with Anemic Domain (Total Symmetry with Frontend)
+        ├── business/                       # Decoupled core (anemic domain, use-cases, repository, ioc)
+        ├── src/                            # HTTP Delivery layer (controllers with Zod, routes, middlewares)
+        ├── config/                         # Infrastructure facades (database, logger)
+        └── utils/                          # Schema validation (safeParseWithLogging) and id-generator
 ```
 
 ---
 
-## 🟢 1. Projetos Pequenos (Tier 1: Small)
+## 🟢 1. Small Projects (Tier 1: Small)
 
-### 📌 Contexto
-- **Público-alvo:** 1 a 2 desenvolvedores.
-- **Natureza do projeto:** Provas de conceito (POCs), MVPs de validação rápida, ferramentas internas operacionais e automações.
-- **Vida útil prevista:** De poucas semanas a 6 meses.
-- **Volume:** Menos de 100 requisições por minuto.
-
----
-
-### 🎨 Frontend: Monólito Single-File
-📁 Localização: [`blueprints/small/frontend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/frontend/README.md)
-
-Neste modelo, **não utilizamos separação em múltiplas camadas**. Cada página gerencia seu estado (`useState`, `useEffect`), consome a API diretamente e renderiza o JSX no mesmo arquivo (veja [`HomePage.tsx`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/frontend/src/pages/HomePage.tsx)).
-
-#### 🎯 Propósito:
-Eliminar toda e qualquer burocracia desnecessária. O objetivo de um MVP é validar uma hipótese de negócio no menor tempo e com o menor custo possível.
-
-#### ✅ Ganhos:
-- **Time-to-Market imbatível:** Cria-se uma tela inteira e funcional em menos de 1 hora.
-- **Zero fadiga de arquivos (*file fatigue*):** O desenvolvedor abre um único arquivo e enxerga todo o fluxo de ponta a ponta em 50 a 80 linhas.
-- **Curva de aprendizado nula:** Qualquer desenvolvedor, do estagiário ao sênior, consegue manter o código imediatamente.
-
-#### ⚠️ Trade-offs & Limitações (O que NÃO escala):
-- **Testes isolados difíceis:** Para testar a lógica da tela, é obrigatório renderizar o componente inteiro no Testing Library.
-- **Conflitos de merge:** Se mais de 2 pessoas mexerem na mesma tela simultaneamente, haverá atrito constante no Git.
-- **Vazamento de regras:** Se o produto crescer e ganhar 20 novas regras, a página vira um arquivo monstro de 600 linhas.
+### 📌 Context & Scope
+- **Target Team:** 1 to 2 developers.
+- **Project Nature:** Proofs of Concept (POCs), rapid MVP validation, internal automation, and operational tools.
+- **Expected Lifespan:** A few weeks up to 6 months.
+- **Traffic Volume:** Under 100 requests per minute.
 
 ---
 
-### ⚙️ Backend: Monólito Minimalista Direto
-📁 Localização: [`blueprints/small/backend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/backend/README.md)
+### 🎨 Frontend: Single-File Monolith
+📁 Location: [`blueprints/small/frontend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/frontend/README.md)
 
-O servidor é construído em 1 ou 2 arquivos diretos (veja [`src/index.ts`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/backend/src/index.ts)) usando Fastify ou Express. A rota recebe o payload, valida campos básicos e persiste direto em memória, SQLite ou Postgres simples.
+In this tier, **we deliberately avoid multi-layered separation**. Each page manages its own local state (`useState`, `useEffect`), calls the API directly, and renders its JSX in the exact same file (see [`HomePage.tsx`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/frontend/src/pages/HomePage.tsx)).
 
-#### 🎯 Propósito:
-Entregar a API com custo de infraestrutura quase zero e sem burocracia de injeção de dependência ou DTOs intermediários.
+#### 🎯 Purpose:
+Eliminate accidental complexity. The only goal of an MVP is to validate a business hypothesis with minimum latency and cost.
 
-#### ✅ Ganhos:
-- **Custo operacional mínimo:** Roda perfeitamente em uma VM simples de $5 ou em containers serverless gratuitos.
-- **Manutenção linear:** Sem navegar por 5 diretórios para achar onde o dado é salvo no banco.
+#### ✅ Benefits:
+- **Unbeatable Time-to-Market:** Build a fully working screen in less than an hour.
+- **Zero File Fatigue:** Developers open a single file and inspect the entire end-to-end flow in 50 to 80 lines of code.
+- **Zero Learning Curve:** Any developer can read, understand, and modify the code instantly.
 
-#### ⚠️ Trade-offs & Limitações (O que NÃO escala):
-- **Acoplamento ao framework HTTP:** A regra de negócio fica presa dentro do callback da rota `app.post(...)`.
-- **Dificuldade de mockar o banco:** Impossível rodar testes unitários rápidos sem subir o banco de dados.
-
----
-
-## 🟡🔴 2. Projetos Médios e Grandes (Tier 2 & 3: Medium/Large)
-
-### 📌 Contexto
-- **Público-alvo:** 3 a 8+ desenvolvedores (1 a 3 squads).
-- **Natureza do projeto:** Produtos SaaS comerciais, portais B2B corporativos, backends de alta criticidade e aplicações com roadmap contínuo (1 a 3+ anos).
-- **Volume:** Centenas a milhares de requisições por minuto com exigência de estabilidade e manutenibilidade.
+#### ⚠️ Trade-offs & Limitations (What Does NOT Scale):
+- **Hard to Test in Isolation:** Testing screen logic requires rendering the entire component tree using DOM testing tools (Testing Library).
+- **Merge Conflicts:** If more than 2 developers touch the same screen simultaneously, Git conflicts are guaranteed.
+- **Rule Leakage:** If the product expands to 20 complex business rules, the single file morphs into an unmaintainable 600-line monolith.
 
 ---
 
-### 🏛️ Diretriz Central: Evitar Microsserviços por Padrão
+### ⚙️ Backend: Direct Minimalist Monolith
+📁 Location: [`blueprints/small/backend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/backend/README.md)
 
-> **"Microsserviço é uma solução organizacional para times gigantes que precisam fazer deploys independentes, não um requisito de qualidade de código."**
+The API is structured in 1 or 2 straightforward files (see [`src/index.ts`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/small/backend/src/index.ts)) using Fastify or Express. The route receives payloads, validates basic properties, and persists directly into memory, SQLite, or simple PostgreSQL.
 
-Neste repositório, adotamos o **Monólito Modular** no Backend e o **Clean MVVM** no Frontend.
-- **Por que evitar microsserviços:** Microsserviços introduzem latência de rede entre chamadas, custos de observabilidade distribuída (Jaeger/OpenTelemetry), necessidade de mensageria assíncrona (RabbitMQ/Kafka), consistência eventual e o risco iminente de criar um *monólito distribuído*.
-- **O ganho do Monólito Modular:** Executa em memória com latência próxima de zero, utiliza transações ACID nativas do banco de dados, possui pipeline de CI/CD único e muito mais barato, mantendo as **fronteiras de domínio 100% isoladas**.
+#### 🎯 Purpose:
+Deliver the backend with near-zero infrastructure cost and zero boilerplate (no dependency injection containers or intermediary DTO layers).
+
+#### ✅ Benefits:
+- **Minimal Operational Cost:** Runs smoothly on a \$5 VPS or free serverless container tiers.
+- **Linear Debugging:** No traversing through 5 abstraction directories to find where data is saved.
+
+#### ⚠️ Trade-offs & Limitations (What Does NOT Scale):
+- **Framework Coupling:** Business rules reside directly inside `app.post(...)` route handlers.
+- **Mocking Database is Difficult:** Unit testing business rules in pure memory without spinning up a real database is unfeasible.
 
 ---
 
-### 🎨 Frontend: Clean MVVM Adaptado com InversifyJS e Zod
-📁 Localização: [`blueprints/medium-large/frontend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/README.md)
+## 🟡🔴 2. Medium and Large Projects (Tier 2 & 3: Medium/Large)
 
-O Frontend é estruturado em **4 macro-camadas**:
+### 📌 Context & Scope
+- **Target Team:** 3 to 8+ developers (1 to 3 squads).
+- **Project Nature:** Commercial SaaS platforms, enterprise B2B portals, high-criticality backends, and long-term products (1 to 3+ years).
+- **Traffic Volume:** Hundreds to thousands of requests per minute, requiring high availability, predictability, and maintainability.
+
+---
+
+### 🏛️ Core Principle: Avoid Microservices by Default
+
+> **"Microservices are an organizational solution for massive organizations needing decoupled release pipelines, not a measure of code quality."**
+
+In this repository, we enforce a **Modular Monolith** for the Backend and **Clean MVVM** for the Frontend.
+- **Why avoid microservices:** Microservices introduce inter-service network latency, distributed tracing overhead (Jaeger/OpenTelemetry), message broker complexities (RabbitMQ/Kafka), eventual consistency nightmares, and the catastrophic risk of building a *distributed monolith*.
+- **The Modular Monolith advantage:** Executes in-process with sub-millisecond call times, benefits from native ACID database transactions, runs on a single cost-effective CI/CD pipeline, and keeps **domain boundaries 100% isolated**.
+
+---
+
+### 🎨 Frontend: Clean MVVM with InversifyJS & Zod
+📁 Location: [`blueprints/medium-large/frontend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/README.md)
+
+The Frontend is organized into **4 macro-layers**:
 
 ```text
 src/
-├── business/               # Inteligência e regras desacopladas da UI
-│   ├── api/                # Gateway de rede HTTP e validação Zod
-│   ├── application/        # Casos de uso de tela (trata e transporta dados)
-│   ├── repository/         # Persistência em Storage local, IndexedDB ou BaaS
-│   ├── domain/             # Entidades de negócio (ativo se usar BaaS/Next local)
+├── business/               # UI-independent business logic
+│   ├── api/                # Network gateways & Zod payload validation
+│   ├── application/        # Screen use cases (data transformations & orchestration)
+│   ├── repository/         # Local persistence (LocalStorage, IndexedDB, BaaS)
+│   ├── domain/             # Domain entities (active if using BaaS or local full-stack)
 │   ├── shared/             # Design Patterns (Adapters, Mappers, Factories)
-│   └── ioc/                # InversifyJS Container e Tokens (Symbol.for)
+│   └── ioc/                # InversifyJS container & injection tokens (Symbol.for)
 │
-├── src/                    # Camada de View / Apresentação (UI pura)
-│   ├── pages/              # Páginas especialistas no padrão Quádruplo
-│   ├── components/         # Componentes visuais compostos
-│   ├── design-system/      # Tokens e componentes atômicos (Button, Input)
-│   ├── globals/            # Temas CSS e estilos globais
-│   ├── routes/             # Definição e navegação de rotas
-│   ├── store/              # Estado compartilhado entre telas de baixa frequência
-│   ├── guards/             # Proteção de rotas privadas (Auth/RBAC)
-│   └── hooks/              # Conectores agnósticos da View com a Store
+├── src/                    # Presentation / View layer (pure UI)
+│   ├── pages/              # Specialized pages following the Quartet pattern
+│   ├── components/         # Composite reusable visual components
+│   ├── design-system/      # Atomic UI tokens & components (Button, Input)
+│   ├── globals/            # Global themes & CSS tokens
+│   ├── routes/             # Route definitions & navigation
+│   ├── store/              # Low-frequency shared state across screens (session/auth)
+│   ├── guards/             # Private route guards (Auth / RBAC)
+│   └── hooks/              # Framework connectors linking View to Store
 │
-├── config/                 # Padrão Facade isolando bibliotecas externas (HTTP, Analytics)
-└── utils/                  # Função pura safeParseWithLogging e helpers
+├── config/                 # Facade pattern isolating 3rd-party libraries (HTTP, Analytics)
+└── utils/                  # Safe schema validation (safeParseWithLogging) & pure helpers
 ```
 
 ---
 
-#### 📐 A Separação de Contratos em Cada Camada (`contracts/interfaces` e `contracts/types`)
+#### 📐 Strict Contract Separation (`contracts/interfaces` & `contracts/types`)
 
-Em todas as subcamadas de `business/` e `config/`, separamos rigorosamente contratos de implementações:
-1. **`contracts/interfaces/`:** Contratos puros de interface TypeScript (`IOrderApiGateway`, `IOrderApplicationService`, `IHttpFacade`). Permite que as classes dependam apenas de abstrações (DIP - Dependency Inversion Principle).
-2. **`contracts/types/`:** Conversão do **tipo cru nativo de rede** para o **Schema Zod**, exportando **ambos** (o tipo cru e o tipo inferido `z.infer<typeof ...>`).
-3. **Implementações (`gateway/`, `services/`, `repositories/`, `facades/`):** Classes concretas decoradas com `@injectable()` do InversifyJS.
+Every sub-layer within `business/` and `config/` strictly separates contracts from implementations:
+1. **`contracts/interfaces/`:** Pure TypeScript interfaces (`IOrderApiGateway`, `IOrderApplicationService`, `IHttpFacade`). Enables classes to depend exclusively on abstractions (DIP - Dependency Inversion Principle).
+2. **`contracts/types/`:** Converts **raw network payloads** into **Zod Schemas**, exporting **both** (the raw type and the inferred static type `z.infer<typeof ...>`).
+3. **Implementations (`gateway/`, `services/`, `repositories/`, `facades/`):** Concrete classes decorated with InversifyJS `@injectable()`.
 
-**Ganhos:** Elimina qualquer tipo de "adivinhação" de tipagem. Se a resposta da API mudar, o Zod falha em tempo de execução e o TypeScript avisa em tempo de compilação.
-
----
-
-#### 📐 Padrão Quádruplo em Páginas (`src/pages/`) vs. Componentes Comuns
-
-Para páginas complexas (veja [`src/pages/checkout/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/src/pages/checkout)), aplicamos a segregação em 4 arquivos especialistas:
-
-1. **`[nome].base.tsx` (Composition Root / Container de Injeção):**
-   - É o componente consumido pelas rotas (`src/routes/`).
-   - Resolve as dependências reais via Inversify Container (`container.get(...)`).
-   - Envelopa a View passando `{ states, actions }`.
-2. **`[nome].controller.tsx` (ViewModel):**
-   - Contém toda a lógica de estado (`useState`), efeitos e handlers da tela.
-   - Recebe os serviços e dependências via **parâmetros de injeção** (permitindo mock total).
-   - Retorna exclusivamente dois objetos: `states` (dados prontos para exibição) e `actions` (callbacks e funções de disparo).
-3. **`[nome].view.tsx` (Apresentação Pura / UI Burra):**
-   - Não conhece roteamento, HTTP ou containers de injeção.
-   - Recebe apenas `states` e `actions` via props e renderiza o JSX.
-   - **Perfeita para Storybook e testes de regressão visual.**
-4. **`[nome].styles.ts`:**
-   - Estilização isolada da tela (Tailwind, styled-components ou tokens CSS).
-
-> ⚠️ **Regra de Ouro Corporativa:**
-> O padrão quádruplo é **obrigatório para Páginas**, mas **proibido para Componentes Simples (`src/components` e `src/design-system`)**. Componentes atômicos (como um `Button` ou `UserCard`) devem permanecer diretos em 1 arquivo para evitar burocracia e fadiga de arquivos.
+**Benefit:** Eliminates runtime type surprises. If an API payload shape drifts, Zod catches it instantly at runtime and TypeScript catches it at compile time.
 
 ---
 
-### ⚙️ Backend: Clean Architecture com Domínio Anêmico
-📁 Localização: [`blueprints/medium-large/backend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/backend/README.md)
+#### 📐 The Page Quartet Pattern (`src/pages/`) vs. Simple Components
 
-O Backend reflete a **mesma estrutura do Frontend**, adaptado para o contexto de servidor (onde não existe View, e a camada `src/` atua como entrega/apresentação HTTP).
+For complex pages (see [`src/pages/checkout/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/src/pages/checkout)), we enforce separation across 4 specialized files:
+
+1. **`[name].base.tsx` (Composition Root / Injection Container):**
+   - The entry component consumed by routes (`src/routes/`).
+   - Resolves concrete dependencies from the Inversify container (`container.get(...)`).
+   - Wraps the View, passing `{ states, actions }`.
+2. **`[name].controller.tsx` (ViewModel):**
+   - Owns all screen state logic (`useState`), effects, and action handlers.
+   - Receives services via **parameter injection** (enabling 100% mockability).
+   - Returns strictly two objects: `states` (UI-ready presentation data) and `actions` (callbacks and dispatch functions).
+3. **`[name].view.tsx` (Pure Presentation / Dumb UI):**
+   - Unaware of routing, HTTP clients, or dependency injection containers.
+   - Receives only `states` and `actions` via props and renders JSX.
+   - **Ideal for Storybook stories and visual regression testing.**
+4. **`[name].styles.ts`:**
+   - Isolated styling declarations (Tailwind classes, CSS Modules, or style tokens).
+
+> ⚠️ **Golden Rule:**
+> The Quartet pattern is **mandatory for Pages**, but **strictly forbidden for Simple Components (`src/components` & `src/design-system`)**. Atomic components (like `Button` or `UserCard`) must remain single files to avoid file fatigue and boilerplate.
+
+---
+
+### ⚙️ Backend: Clean Architecture with Anemic Domain
+📁 Location: [`blueprints/medium-large/backend/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/backend/README.md)
+
+The Backend mirrors the **exact same architecture as the Frontend**, adapted for server runtime (where there is no View, and `src/` acts as the HTTP Delivery/Presentation layer).
 
 ```text
 backend/
 ├── business/
-│   ├── domain/             # Entidades anêmicas (OrderEntity: estado e dados puros)
-│   ├── application/        # Casos de uso com as regras de negócio (CreateOrderUseCase)
-│   ├── repository/         # Interfaces e implementações de banco (OrderPostgresRepository)
-│   └── ioc/                # Inversify Container e tokens TYPES
+│   ├── domain/             # Anemic entities (OrderEntity: pure data & state)
+│   ├── application/        # Use cases housing business rules (CreateOrderUseCase)
+│   ├── repository/         # Database interfaces & implementations (OrderPostgresRepository)
+│   └── ioc/                # InversifyJS container & injection tokens
 │
-├── src/                    # Camada de Entrega HTTP (Controllers com Zod, Routes, Middlewares)
-├── config/                 # Fachadas (Facades) para infraestrutura (Database, Logger)
-└── utils/                  # safeParseWithLogging e gerador de IDs
+├── src/                    # HTTP Delivery layer (Zod-validated controllers, routes, middlewares)
+├── config/                 # Infrastructure facades (Database, Logger)
+└── utils/                  # safeParseWithLogging & ID generator
 ```
 
 ---
 
-#### 🧠 Por que Domínio Anêmico no Backend?
+#### 🧠 Why Anemic Domain in the Backend?
 
-Muitos projetos tentam aplicar Domain-Driven Design (DDD) clássico com entidades ricas (`order.confirm()`, `order.calculateTaxes()`), mas acabam enfrentando uma fricção enorme ao mapear essas classes com ORMs modernos (Prisma, Drizzle, Kysely) e bancos relacionais.
+Many projects attempt classic Domain-Driven Design (DDD) with rich entities (`order.confirm()`, `order.calculateTaxes()`), but face constant impedance mismatch when mapping these classes to modern relational databases and ORMs (Prisma, Drizzle, Kysely).
 
-**Nossa abordagem pragmática:**
-1. **A Entidade (`domain/entities/order.entity.ts`) é ANÊMICA:** Ela é apenas uma portadora de dados tipada e validada pelo Zod. Zero métodos de regra embutidos.
-2. **O Caso de Uso (`application/use-cases/create-order.use-case.ts`) GOVERNA as Regras:** Toda validação de negócio, transição de status e orquestração com repositórios e mensageria acontece no Use Case.
+**Our Pragmatic Stance:**
+1. **The Entity (`domain/entities/order.entity.ts`) is ANEMIC:** It is a typed data carrier validated by Zod. It contains zero business logic methods.
+2. **The Use Case (`application/use-cases/create-order.use-case.ts`) GOVERNS Rules:** All business validations, state transitions, repository transactions, and notifications live inside Use Cases.
 
-#### ✅ Ganhos:
-- **Integração transparente com Banco/ORM:** A entidade mapeia de forma 1:1 com as tabelas do banco de dados sem conversores complexos.
-- **Testes unitários ultra-rápidos:** O Caso de Uso é testado em Node puro injetando mocks das interfaces `IOrderRepository` e `ILoggerFacade`.
-- **Simetria Cognitiva:** Quem trabalha no Front entende o Back instantaneamente porque a estrutura de pastas e contratos é idêntica.
-
----
-
-### 🛡️ Padrão Facade em `config/` (Frontend & Backend)
-
-Tanto no Front quanto no Back, pacotes NPM de terceiros **nunca são importados diretamente dentro do código de negócio ou das telas**.
-- No Front: O Fetch nativo ou Axios fica encapsulado em [`config/facades/http.facade.ts`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/config/facades/http.facade.ts).
-- No Back: O driver do Postgres fica encapsulado em [`config/facades/database.facade.ts`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/backend/config/facades/database.facade.ts).
-
-**Propósito e Ganho:** Se uma biblioteca de terceiros tiver uma falha de segurança (CVE), for depreciada ou precisar ser trocada, altera-se **um único arquivo** de fachada, sem tocar em nenhuma das 50 páginas ou nos 30 casos de uso do sistema.
+#### ✅ Benefits:
+- **Seamless Database/ORM Integration:** The entity maps 1:1 with database tables without complex entity-to-persistence mappers.
+- **Blazing Fast Unit Tests:** Use Cases are tested in pure Node by supplying mocks of `IOrderRepository` and `ILoggerFacade`.
+- **Cognitive Symmetry:** Developers moving between Frontend and Backend instantly recognize layer conventions and file paths.
 
 ---
 
-### 🔍 Validação Segura com `safeParseWithLogging` em `utils/`
+### 🛡️ The Facade Pattern in `config/` (Frontend & Backend)
 
-Localizada na camada mais externa (`utils/schema-validator.ts`), essa função utilitária pura resolve o problema de dados corrompidos:
-1. Executa o `safeParse` do Zod sobre a entrada ou resposta da API.
-2. Se houver divergência, emite um log estruturado em JSON com a severidade correta:
-   - `warn`: para divergências não bloqueantes ou dados parciais.
-   - `error`: para falhas críticas de quebra de contrato.
-3. Garante o princípio **Fail-Fast**: a aplicação interrompe o fluxo imediatamente com um erro descritivo em vez de renderizar `undefined` ou salvar lixo no banco de dados.
+Across both Frontend and Backend, third-party NPM libraries are **never imported directly into business logic or UI screens**.
+- In Frontend: Native Fetch or Axios is wrapped by [`config/facades/http.facade.ts`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/frontend/config/facades/http.facade.ts).
+- In Backend: Database drivers are wrapped by [`config/facades/database.facade.ts`](file:///home/castro/Documentos/Personal/Architecture-new-flow/blueprints/medium-large/backend/config/facades/database.facade.ts).
+
+**Purpose & Benefit:** If a third-party package undergoes breaking changes, suffers a vulnerability (CVE), or needs replacement, developers modify **a single facade file** without touching 50 UI pages or 30 backend use cases.
 
 ---
 
-## 📊 Matriz Comparativa Consolidada
+### 🔍 Safe Runtime Validation with `safeParseWithLogging` in `utils/`
 
-| Aspecto | Tier 1: Small (Pequeno) | Tier 2 & 3: Medium/Large (Médio e Grande) |
+Located in the outermost utility layer (`utils/schema-validator.ts`), this pure function guarantees data integrity:
+1. Executes Zod `safeParse` over incoming requests or API responses.
+2. In case of schema violation, logs structured JSON with explicit severities:
+   - `warn`: non-blocking discrepancies or partial payloads.
+   - `error`: critical contract breaches.
+3. Enforces **Fail-Fast**: halts processing immediately with actionable telemetry instead of rendering `undefined` or corrupting database records.
+
+---
+
+## 📊 Consolidated Architecture Comparison
+
+| Architectural Aspect | Tier 1: Small (MVP / Internal) | Tier 2 & 3: Medium/Large (Core Platform) |
 | :--- | :--- | :--- |
-| **Padrão Frontend** | Monólito Single-File (1 arquivo por tela) | Clean MVVM com IoC (Inversify) e Quarteto em Páginas |
-| **Padrão Backend** | Monólito Minimalista em 1 ou 2 arquivos | Clean Architecture com Domínio Anêmico e Use Cases |
-| **Inversão de Controle (IoC)** | Nenhuma (chamadas e instâncias diretas) | InversifyJS obrigatório via Tokens `Symbol.for` |
-| **Validação de Contratos** | Validação condicional simples | Schemas Zod com `safeParseWithLogging` e severidades |
-| **Testabilidade** | Testes de ponta a ponta (E2E) ou integração | Testes unitários puros isolados (Node puro sem DOM/banco) |
-| **Velocidade Inicial** | ⚡ Máxima (entrega em horas/dias) | ⏱️ Moderada (exige criar interfaces, types e binds) |
-| **Custo de Manutenção a Longo Prazo** | ⚠️ Alto se o projeto crescer | 💎 Baixo (refatorações seguras e sem conflitos de time) |
+| **Frontend Pattern** | Single-File Monolith (1 file per screen) | Clean MVVM with IoC (Inversify) & Page Quartet |
+| **Backend Pattern** | Direct Minimalist Monolith (1-2 files) | Clean Architecture with Anemic Domain & Use Cases |
+| **Inversion of Control (IoC)** | None (direct calls & instantiations) | InversifyJS via Symbol tokens (`Symbol.for`) |
+| **Contract Validation** | Simple conditional checks | Zod Schemas via `safeParseWithLogging` & severities |
+| **Testing Strategy** | End-to-end (E2E) or integration | Pure unit testing in Node (zero DOM/database requirement) |
+| **Initial Velocity** | ⚡ Maximum (deliver in hours/days) | ⏱️ Moderate (requires contracts, types & binds) |
+| **Long-Term Maintenance Cost** | ⚠️ High if the project grows | 💎 Low (safe refactoring, zero squad merge collisions) |
 
 ---
 
-## 📋 Diretrizes Corporativas Transversais ([`guidelines/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines))
+## 📋 Cross-Cutting Guidelines ([`guidelines/`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines))
 
-Independentemente do Tier adotado, os projetos devem respeitar as seguintes diretrizes:
-1. [`api-standards.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/api-standards.md): Erros em formato RFC 7807 (Problem Details), paginação forçada e idempotência em mutações.
-2. [`security-baseline.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/security-baseline.md): Fail-fast no startup com validação de variáveis de ambiente via Zod e menor privilégio.
-3. [`observability.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/observability.md): Logs estruturados em JSON com `timestamp`, `level` e IDs de correlação, além de endpoints `/health/live` e `/health/ready`.
-4. [`contracts.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/contracts.md): Sincronização tipada de contratos entre Frontend e Backend via OpenAPI.
+Regardless of the selected Tier, all projects must adhere to baseline corporate guidelines:
+1. [`api-standards.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/api-standards.md): RFC 7807 Problem Details error envelopes, mandatory pagination, and mutation idempotency.
+2. [`security-baseline.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/security-baseline.md): Fail-fast environment variable parsing via Zod and least-privilege principles.
+3. [`observability.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/observability.md): Structured JSON logging with trace IDs, correlation contexts, and standard `/health/live` & `/health/ready` endpoints.
+4. [`contracts.md`](file:///home/castro/Documentos/Personal/Architecture-new-flow/guidelines/contracts.md): Type-safe Frontend-Backend contract synchronization via OpenAPI.

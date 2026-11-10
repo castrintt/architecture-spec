@@ -2,10 +2,10 @@ import { IOrderEntity } from '../contracts/interfaces/order-entity.interface.js'
 import { OrderStatus } from '../contracts/types/order-status.types.js';
 
 /**
- * Entidade de Domínio Anêmica:
- * Portadora de dados e estado puro. Zero regras ou métodos de comportamento.
- * As regras de negócio e transições de estado são governadas exclusivamente
- * pelos Casos de Uso na camada 'business/application/use-cases/'.
+ * Anemic Domain Entity:
+ * Pure state and data carrier without business logic methods.
+ * State transitions and business rules are governed exclusively
+ * by Use Cases inside 'business/application/use-cases/'.
  */
 export class OrderEntity implements IOrderEntity {
   public id: string;
@@ -28,4 +28,3 @@ export class OrderEntity implements IOrderEntity {
     this.createdAt = params.createdAt ?? new Date();
   }
 }
-

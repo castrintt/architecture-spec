@@ -1,6 +1,5 @@
 /**
- * Camada src/routes:
- * Definição centralizada de rotas da aplicação (públicas e privadas).
+ * Centralized Route Table (Public and Private routes)
  */
 export const ROUTES = {
   PUBLIC: {
@@ -9,8 +8,8 @@ export const ROUTES = {
   },
   PRIVATE: {
     DASHBOARD: '/dashboard',
+    CHECKOUT: '/checkout',
     ORDERS: '/orders',
     SETTINGS: '/settings',
   },
 } as const;
-

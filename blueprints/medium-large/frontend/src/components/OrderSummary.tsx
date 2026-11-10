@@ -9,8 +9,7 @@ interface OrderSummaryProps {
 }
 
 /**
- * Camada src/components:
- * Componente visual que consome diretamente a OrderItemView preparada pela camada application.
+ * Composite UI Component rendering an OrderItemView prepared by the Application layer.
  */
 export function OrderSummary({ order, onCancel }: OrderSummaryProps) {
   return (
@@ -27,7 +26,7 @@ export function OrderSummary({ order, onCancel }: OrderSummaryProps) {
       }}
     >
       <div>
-        <p style={{ margin: 0, fontWeight: 'bold' }}>Pedido #{order.id}</p>
+        <p style={{ margin: 0, fontWeight: 'bold' }}>Order #{order.id}</p>
         <span style={{ color: theme.colors.textMuted, fontSize: '0.875rem' }}>
           Status: {order.statusBadge}
         </span>
@@ -37,11 +36,10 @@ export function OrderSummary({ order, onCancel }: OrderSummaryProps) {
         <span style={{ fontSize: '1.125rem', fontWeight: 600 }}>{order.displayPrice}</span>
         {order.canCancel && (
           <Button variant="danger" onClick={() => onCancel(order.id)}>
-            Cancelar
+            Cancel
           </Button>
         )}
       </div>
     </div>
   );
 }
-

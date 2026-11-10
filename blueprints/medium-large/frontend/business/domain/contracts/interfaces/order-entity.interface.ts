@@ -1,7 +1,7 @@
 import { OrderStatus } from '../types/order-status.types.js';
 
 /**
- * Contrato de Interface para a Entidade de Domínio de Pedido
+ * Interface contract for Domain Order Entity
  */
 export interface IOrderEntity {
   readonly id: string;
@@ -10,4 +10,3 @@ export interface IOrderEntity {
   canBeCanceled(): boolean;
   cancel(): void;
 }
-

@@ -1,24 +1,24 @@
-# 🔭 Diretrizes de Observabilidade (Observability Baseline)
+# 🔭 Observability Baseline Guidelines
 
-Aplicações sem observabilidade são caixas-pretas que tornam incidentes caros e lentos para resolver.
+Applications without proper observability are black boxes that make incident resolution costly and slow.
 
 ---
 
-## 1. Logs Estruturados em JSON
+## 1. Structured JSON Logging
 
-Todo log emitido em produção deve ser em formato JSON (utilizando bibliotecas como `pino`, `winston` ou `zerolog`), contendo obrigatoriamente:
+All production logs must be emitted in structured JSON format (using libraries such as Pino or Winston) containing:
 - `timestamp`: ISO 8601
 - `level`: info, warn, error, fatal
-- `traceId` e `spanId`: para correlação
-- `message`: mensagem humana clara
-- `context`: objeto com IDs de negócio (ex: `userId`, `orderId`)
+- `traceId` and `spanId`: distributed correlation identifiers
+- `message`: human-readable description
+- `context`: object containing business IDs (e.g., `userId`, `orderId`)
 
 ```json
 {
-  "timestamp": "2026-11-09T14:15:30.123Z",
+  "timestamp": "2026-11-10T14:15:30.123Z",
   "level": "error",
   "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
-  "message": "Falha na cobrança do cartão",
+  "message": "Payment processing failed",
   "context": {
     "orderId": "ord_9921",
     "providerError": "insufficient_funds"
@@ -28,9 +28,8 @@ Todo log emitido em produção deve ser em formato JSON (utilizando bibliotecas 
 
 ---
 
-## 2. Healthchecks Padronizados
+## 2. Standardized Healthchecks
 
-Todo backend deve expor dois endpoints:
-- `GET /health/live`: responde `200 OK` se o processo estiver rodando.
-- `GET /health/ready`: responde `200 OK` apenas se as dependências essenciais (banco de dados, filas críticas) estiverem acessíveis.
-
+Every backend service must expose two distinct endpoints:
+- `GET /health/live`: responds `200 OK` if the process is running.
+- `GET /health/ready`: responds `200 OK` only when critical dependencies (database, broker) are healthy and reachable.

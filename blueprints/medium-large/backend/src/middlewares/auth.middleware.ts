@@ -1,5 +1,5 @@
 /**
- * Middleware / Guard de Autenticação e RBAC no Backend
+ * Authentication and RBAC Middleware Guard
  */
 export interface AuthUser {
   userId: string;
@@ -10,15 +10,14 @@ export function authGuard(requiredRole?: string) {
   return async (req: { headers: Record<string, string | undefined>; user?: AuthUser }) => {
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new Error('UNAUTHORIZED: Token ausente');
+      throw new Error('UNAUTHORIZED: Token missing');
     }
 
-    // Mock de decodificação de JWT
+    // Mock JWT payload decoding
     req.user = { userId: 'usr_mock_123', roles: ['ADMIN'] };
 
     if (requiredRole && !req.user.roles.includes(requiredRole)) {
-      throw new Error('FORBIDDEN: Permissão insuficiente');
+      throw new Error('FORBIDDEN: Insufficient permissions');
     }
   };
 }
-

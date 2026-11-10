@@ -1,5 +1,5 @@
 /**
- * Tokens de Inversão de Controle com Symbols para o Backend
+ * Backend Inversion of Control Tokens (Symbols)
  */
 export const TYPES = {
   // Config / Facades
@@ -15,4 +15,3 @@ export const TYPES = {
   // Controllers
   OrderController: Symbol.for('OrderController'),
 } as const;
-

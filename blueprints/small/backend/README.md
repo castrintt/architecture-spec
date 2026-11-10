@@ -1,26 +1,26 @@
-# 🟢 Blueprint: Small (Backend - Monólito Minimalista)
+# 🟢 Blueprint: Small (Backend - Minimalist Monolith)
 
-Projetos pequenos (MVPs, ferramentas internas, 1 a 2 desenvolvedores).
+Tailored for small projects (MVPs, internal tools, proofs of concept, 1 to 2 developers).
 
 ---
 
-## 🎯 Filosofia: Monólito em Arquivos Diretos (Simetria com o Front Small)
+## 🎯 Philosophy: Direct Monolithic Files (Symmetry with Frontend Small)
 
-Assim como no frontend pequeno temos o componente single-file, no backend pequeno **não utilizamos separação de Clean Architecture, Inversify ou camadas de Use Cases e Repositórios**.
+Just as the small frontend leverages single-file components, the small backend **does not implement Clean Architecture, Inversify, or layered Use Cases and Repositories**.
 
 ```text
 src/
-└── index.ts              # Servidor Fastify com rotas, validação e persistência direta
+└── index.ts              # Fastify server with direct routing, validation, and persistence
 ```
 
 ---
 
-## ⚖️ O que escala vs. O que não escala
+## ⚖️ What Scales vs. What Does NOT Scale
 
-- **O que escala:**
-  - **Entrega em poucas horas:** sem cerimônia de inversão de controle, DTOs intermediários ou interfaces.
-  - **Custo mínimo:** roda em 1 container de $5 ou serverless direto.
-  - **Entendimento instantâneo:** qualquer dev lê o arquivo `index.ts` de ponta a ponta em 3 minutos.
+- **What Scales:**
+  - **Ship in hours:** zero dependency injection boilerplate, zero intermediary DTOs or abstract interfaces.
+  - **Minimal cost:** runs effortlessly on a \$5 VPS or free serverless container tier.
+  - **Instant comprehension:** any developer reads `index.ts` end-to-end in 3 minutes.
 
-- **O que NÃO escala:**
-  - Se a regra de negócio crescer para múltiplos domínios ou se o time passar de 2 devs, a falta de camadas começa a dificultar a manutenção.
+- **What Does NOT Scale:**
+  - If business logic expands across multiple complex domains or teams exceed 2 developers, lack of layers slows down feature velocity.

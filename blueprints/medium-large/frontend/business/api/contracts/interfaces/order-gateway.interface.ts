@@ -5,10 +5,9 @@ import {
 } from '../types/order.types.js';
 
 /**
- * Contrato de Interface para o Gateway da API de Pedidos
+ * Interface contract for Orders API Gateway
  */
 export interface IOrderApiGateway {
   fetchOrders(): Promise<OrderRawDTO[]>;
   createOrder(payload: CreateOrderPayload): Promise<CreateOrderResponse>;
 }
-

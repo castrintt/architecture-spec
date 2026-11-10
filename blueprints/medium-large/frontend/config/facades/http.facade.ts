@@ -25,4 +25,3 @@ export class NativeHttpFacade implements IHttpFacade {
     return { data: (await res.json()) as T, status: res.status };
   }
 }
-

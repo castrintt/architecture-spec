@@ -1,12 +1,12 @@
-# 🛡️ Diretrizes de Segurança (Security Baseline)
+# 🛡️ Security Baseline Guidelines
 
-Padrões inegociáveis de segurança que o Wizard deve injetar em qualquer novo projeto gerado.
+Non-negotiable security requirements enforced across all project tiers.
 
 ---
 
-## 1. Zero Hardcoded Secrets (Validação de Ambiente em Startup)
+## 1. Zero Hardcoded Secrets (Startup Environment Validation)
 
-Qualquer aplicação DEVE falhar imediatamente no bootstrap (`Fail Fast`) se variáveis obrigatórias estiverem ausentes. Utilize validadores de schema como Zod:
+Applications MUST fail fast during bootstrap if mandatory environment variables are missing or malformed. Use strict schema validation (e.g., Zod):
 
 ```typescript
 import { z } from 'zod';
@@ -23,9 +23,8 @@ export const env = envSchema.parse(process.env);
 
 ---
 
-## 2. Princípio do Menor Privilégio & Least Exposure
+## 2. Principle of Least Privilege & Sanitization
 
-- **Sanitização de Input:** Nunca confie em dados recebidos do cliente. Toda entrada deve passar por validação de tipo e limites de tamanho.
-- **Não vazar PII ou Stacktraces:** Em produção, logs devem mascarar dados sensíveis (senhas, CPFs, tokens).
-- **Headers HTTP de Segurança:** Todo backend web deve utilizar `helmet` (ou equivalente na linguagem adotada) para ativar CSP, HSTS, X-Content-Type-Options e X-Frame-Options.
-
+- **Input Sanitization:** Never trust client input. Validate all incoming parameters, query strings, and request bodies.
+- **No PII Leaks in Production Logs:** Sensitive data (passwords, credit card numbers, tokens) must be redacted before log emission.
+- **Security Headers:** Web backends must configure standard security headers (CSP, HSTS, X-Content-Type-Options, X-Frame-Options) using middlewares such as Helmet.

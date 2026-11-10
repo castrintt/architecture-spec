@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CheckoutViewProps } from './checkout.view.js';
+import { formatCurrency } from '../../../utils/calculations.js';
 
 export interface CheckoutServiceDependency {
   confirmPayment(orderId: string): Promise<{ success: boolean; transactionId?: string }>;
@@ -13,11 +14,11 @@ export interface CheckoutControllerParams {
 }
 
 /**
- * Camada Controller (Lógica de Tela / ViewModel):
- * - Recebe serviços e dependências externas via parâmetros de injeção.
- * - Gerencia estados locais da tela.
- * - Retorna rigorosamente dois objetos: 'states' e 'actions'.
- * - Pode ser testado de forma unitária isolando completamente a View.
+ * Controller Layer (ViewModel / Screen Logic):
+ * - Receives services and external dependencies via injection parameters.
+ * - Owns local screen state hooks.
+ * - Returns strictly two objects: 'states' and 'actions'.
+ * - Unit testable in pure Node without DOM rendering tools.
  */
 export function useCheckoutController({
   orderId,
@@ -29,10 +30,7 @@ export function useCheckoutController({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const formattedTotal = (totalCents / 100).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  });
+  const formattedTotal = formatCurrency(totalCents);
 
   const handleConfirmPayment = async () => {
     setIsProcessing(true);
@@ -46,10 +44,10 @@ export function useCheckoutController({
           onPaymentSuccess(result.transactionId);
         }
       } else {
-        setErrorMessage('Não foi possível processar a cobrança.');
+        setErrorMessage('Unable to process the charge.');
       }
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Erro inesperado.');
+      setErrorMessage(err instanceof Error ? err.message : 'Unexpected error.');
     } finally {
       setIsProcessing(false);
     }
@@ -73,4 +71,3 @@ export function useCheckoutController({
     },
   };
 }
-

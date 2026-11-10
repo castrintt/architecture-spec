@@ -1,16 +1,16 @@
 import Fastify from 'fastify';
 
 /**
- * Padrão Monólito Direto (Tier 1: Small):
- * Em projetos pequenos, a rota HTTP, a validação de dados e a persistência
- * residem no MESMO arquivo. Sem Inversify, sem camadas de use-cases ou repositories.
+ * Direct Monolith Pattern (Tier 1: Small):
+ * In small projects, HTTP routes, payload validation, and persistence
+ * reside in the SAME file. No Inversify, no Use Case or Repository layers.
  */
 const app = Fastify({ logger: true });
 
-// Estado / Persistência em memória ou SQLite direto
+// In-memory or direct SQLite/Postgres persistence
 const items = [
-  { id: 'item_1', title: 'Item Exemplo A', price: 99.9 },
-  { id: 'item_2', title: 'Item Exemplo B', price: 149.0 },
+  { id: 'item_1', title: 'Sample Item A', price: 99.9 },
+  { id: 'item_2', title: 'Sample Item B', price: 149.0 },
 ];
 
 app.get('/health/live', async () => ({ status: 'UP' }));
@@ -22,10 +22,10 @@ app.post('/api/items', async (req, reply) => {
 
   if (!body.title || typeof body.price !== 'number' || body.price <= 0) {
     return reply.status(400).send({
-      type: 'https://api.empresa.com/errors/invalid-payload',
-      title: 'Payload inválido',
+      type: 'https://api.company.com/errors/invalid-payload',
+      title: 'Invalid Payload',
       status: 400,
-      detail: 'Título e preço positivo são obrigatórios',
+      detail: 'Title and positive price are required',
     });
   }
 

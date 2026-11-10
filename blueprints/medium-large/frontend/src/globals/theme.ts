@@ -1,6 +1,6 @@
 /**
- * Camada src/globals:
- * Temas, cores, espaçamentos e constantes visuais globais.
+ * Presentation Globals:
+ * Colors, spacing tokens, and visual constants.
  */
 export const theme = {
   colors: {
@@ -21,4 +21,3 @@ export const theme = {
     xl: '32px',
   },
 };
-

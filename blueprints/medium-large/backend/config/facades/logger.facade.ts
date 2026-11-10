@@ -23,4 +23,3 @@ export class JsonLoggerFacade implements ILoggerFacade {
     }));
   }
 }
-

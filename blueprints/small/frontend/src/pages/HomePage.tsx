@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { fetchItems, Item } from '../api/client.js';
 
 /**
- * Padrão Monólito Single-File (Tier 1: Small):
- * Em projetos pequenos, a lógica (useState, useEffect, handlers) e a renderização (JSX)
- * residem no MESMO arquivo. Sem Base, sem Controller separado e sem injeção formal.
+ * Single-File Monolith Pattern (Tier 1: Small):
+ * In small projects, logic (useState, useEffect, handlers) and rendering (JSX)
+ * reside in the SAME file. No Base, no separate Controller, no formal DI container.
  * 
- * Máxima velocidade de entrega e zero atrito de abstração.
+ * Maximum delivery velocity with zero abstraction friction.
  */
 export function HomePage() {
   const [items, setItems] = useState<Item[]>([]);
@@ -20,17 +20,17 @@ export function HomePage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  if (isLoading) return <div>Carregando catálogo...</div>;
-  if (error) return <div style={{ color: 'red' }}>Erro: {error}</div>;
+  if (isLoading) return <div>Loading catalog...</div>;
+  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
   return (
     <div style={{ maxWidth: 800, margin: '20px auto', fontFamily: 'sans-serif' }}>
-      <h2>Catálogo de Itens (Monólito Direto)</h2>
+      <h2>Item Catalog (Direct Monolith)</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         {items.map((item) => (
           <div key={item.id} style={{ border: '1px solid #ccc', padding: 12, borderRadius: 6 }}>
             <h4>{item.title}</h4>
-            <p style={{ fontWeight: 'bold' }}>R$ {item.price.toFixed(2)}</p>
+            <p style={{ fontWeight: 'bold' }}>${item.price.toFixed(2)}</p>
           </div>
         ))}
       </div>

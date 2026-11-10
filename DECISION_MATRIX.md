@@ -1,74 +1,54 @@
-# 📊 Matriz de Decisão Arquitetural (Decision Matrix)
+# 📊 Architectural Decision Matrix
 
-Esta matriz tem o objetivo de eliminar discussões puramente dogmáticas e subjetivas na escolha da arquitetura. A regra de ouro é: **o menor esforço funcional com o menor custo de manutenção vence**.
+This matrix aims to eliminate subjective, dogmatic debates when selecting an architecture. The golden rule is: **minimum functional effort with the lowest long-term maintenance cost wins**.
 
-> **"Qualquer arquitetura que você não precisa é complexidade acidental que roubará tempo da sua equipe."**
+> **"Any architecture you do not need is accidental complexity that steals time from your team."**
 
 ---
 
-## 1. Scorecard de Avaliação de Projetos
+## 1. Project Evaluation Scorecard
 
-Atribua a pontuação de cada dimensão (1 a 3 pontos) e some o total:
+Assign scores (1 to 3 points) across each dimension and calculate the total:
 
-| Dimensão | 1 Ponto (Baixo) | 2 Pontos (Médio) | 3 Pontos (Alto) | Pontos do Projeto |
+| Dimension | 1 Point (Low) | 2 Points (Medium) | 3 Points (High) | Project Score |
 | :--- | :--- | :--- | :--- | :--- |
-| **1. Tamanho da Equipe** | 1 a 2 desenvolvedores | 3 a 7 desenvolvedores (1 squad) | 8+ desenvolvedores (múltiplas squads) | `[ ]` |
-| **2. Concorrência / Volume** | < 100 req/min (Ferramenta interna, MVP) | 100 a 5.000 req/min | > 5.000 req/min ou picos imprevisíveis | `[ ]` |
-| **3. Complexidade de Domínio** | CRUD direto, poucas regras de negócio | 2 a 5 domínios integrados, fluxos assíncronos | 6+ bounded contexts, fluxos financeiros/auditoria crítica | `[ ]` |
-| **4. Tolerância a Quedas (SLA)** | RPO/RTO tolerante (horas de manutenção aceitáveis) | 99.5% uptime (quedas impactam negócio em horário comercial) | 99.99% uptime (quedas causam prejuízo financeiro imediato) | `[ ]` |
-| **5. Ciclo de Vida do Software** | Prova de conceito, script, vida útil < 6 meses | Produto interno contínuo ou SaaS com roadmap ativo | Plataforma corporativa crítica de longo prazo | `[ ]` |
+| **1. Dedicated Team Size** | 1 to 2 developers | 3 to 7 developers (1 squad) | 8+ developers (multiple squads) | `[ ]` |
+| **2. Concurrency / Peak Traffic** | < 100 req/min (Internal tool, MVP) | 100 to 5,000 req/min | > 5,000 req/min or volatile spikes | `[ ]` |
+| **3. Domain Complexity** | Direct CRUD, few business rules | 2 to 5 bounded domains, async workflows | 6+ domains, financial/audit requirements | `[ ]` |
+| **4. Downtime Tolerance (SLA)** | Tolerant (scheduled maintenance acceptable) | 99.5% uptime (downtime causes operational friction) | 99.99% uptime (downtime causes immediate financial loss) | `[ ]` |
+| **5. Expected Lifespan** | Proof of concept, script, lifespan < 6 months | Ongoing business product or SaaS (1 to 3 years) | Long-term enterprise platform (3+ years) | `[ ]` |
 
-### Total de Pontos:
-- **5 a 8 Pontos:** 🟢 **Tier 1 (Small)**
-- **9 a 12 Pontos:** 🟡 **Tier 2 (Medium)**
-- **13 a 15 Pontos:** 🔴 **Tier 3 (Large)**
-
----
-
-## 2. Análise Detalhada dos Tiers
-
-### 🟢 Tier 1: Small (MVP, Ferramenta Interna, POC)
-- **Frontend:** **Monólito Single-File** (React + Vite). A lógica (hooks/fetch) e a renderização (JSX) residem no mesmo arquivo por tela/componente. Zero cerimônia de injeção ou separação de controller/view.
-- **Backend:** Monólito Minimalista (Fastify / Express / Go standard / Nest minimalista) conectado diretamente ao banco (PostgreSQL ou SQLite para POCs locais).
-- **Banco de Dados:** Banco relacional único ou serviço gerenciado (Supabase/Firebase se time for 1 dev).
-- **O que escala:**
-  - Velocidade inicial de entrega (time-to-market imbatível).
-  - Custo de infraestrutura (roda em 1 container simples ou VM de $5).
-  - Facilidade de depuração (stack trace local direto).
-- **O que NÃO escala:**
-  - Manutenção com time acima de 3 devs editando as mesmas pastas.
-  - Regras de negócio complexas que começam a vazar na camada de apresentação/rotas.
-  - Testabilidade se a lógica ficar acoplada diretamente ao framework HTTP.
+### Total Score:
+- **5 to 8 Points:** 🟢 **Tier 1 (Small)**
+- **9 to 15 Points:** 🟡🔴 **Tier 2 & 3 (Medium/Large)**
 
 ---
 
-### 🟡 Tier 2: Medium (SaaS Comercial, Produto Modular, 1 a 3 Squads)
-- **Frontend:** **Clean MVVM com Segregação Especialista de Páginas**:
-  - **Em Páginas (`src/pages/`):** Padrão Quádruplo obrigatório (`.base.tsx` [Injeção/Composition Root], `.controller.tsx` [ViewModel - States & Actions], `.view.tsx` [UI Burra], `.styles.ts` [Estilos isolados]).
-  - **Em Componentes (`src/components/`, `src/design-system/`):** Componentes visuais diretos em 1 ou 2 arquivos (proibido usar quarteto para evitar *file fatigue*).
-- **Backend:** **Monólito Modular** com Clean/Hexagonal Architecture (Ports and Adapters).
-- **Banco de Dados:** Relacional centralizado (PostgreSQL), schemas separados por módulo se necessário.
-- **Comunicação:** REST bem documentado (OpenAPI) e eventos em memória (EventEmitter ou outbox leve).
-- **O que escala:**
-  - Facilidade para múltiplas pessoas trabalharem sem conflitos de merge (pastas isoladas por módulo).
-  - Testabilidade (regras de negócio 100% isoladas de banco e HTTP; controllers de tela testados em Node puro).
-  - Preparado para evolução: se um módulo virar um gargalo real de CPU/escala, pode ser extraído para microsserviço sem reescrever o domínio.
-- **O que NÃO escala:**
-  - Não faz deploy independente de partes do sistema (deploy é atômico).
-  - Não atende múltiplos times corporativos com pipelines totalmente dissociados.
+## 2. In-Depth Tier Breakdown
+
+### 🟢 Tier 1: Small (MVP, Internal Tool, POC)
+- **Frontend:** **Single-File Monolith** (React + Vite). Screen state, effects, and JSX rendering live inside the same file per screen/component. Zero abstraction overhead.
+- **Backend:** Direct Minimalist Monolith (Fastify or Express) connected directly to persistence (SQLite or simple PostgreSQL).
+- **What Scales:**
+  - Initial delivery velocity (unbeatable time-to-market).
+  - Infrastructure cost (runs on a \$5 VPS or free serverless container).
+  - Ease of debugging (local linear stack traces).
+- **What Does NOT Scale:**
+  - Maintenance when team size exceeds 2 developers editing shared files.
+  - Complex domain rules that begin leaking into HTTP routes and presentation components.
+  - Automated unit testing without rendering full DOM or running database servers.
 
 ---
 
-### 🔴 Tier 3: Large (Enterprise, Múltiplas Squads, Alta Escala)
-- **Frontend:** Monorepo Estruturado (Turborepo ou Nx) com Design System compartilhado, Apps desacoplados e Federação de Módulos (se estritamente necessário).
-- **Backend:** Microsserviços orientados a Domínio (DDD) + Arquitetura Orientada a Eventos (Kafka, RabbitMQ, SQS).
-- **Banco de Dados:** Database per Service, CQRS onde há disparidade brutal entre leitura e escrita.
-- **Observabilidade:** OpenTelemetry obrigatório (Tracing distribuído, logs estruturados em JSON, métricas Prometheus).
-- **O que escala:**
-  - Autonomia real de deploys: Squad A não derruba nem bloqueia Squad B.
-  - Escala elástica seletiva: scale-out apenas do nó de checkout ou processamento de pagamentos.
-- **O que NÃO escala:**
-  - **Custo operacional e cognitivo:** depurar um bug exige rastreio distribuído.
-  - **Consistência:** exige tratamento rigoroso de consistência eventual, idempotência e Saga pattern.
-  - **Inviável para times pequenos:** se aplicado em equipes de menos de 8 devs, a equipe passará mais tempo mantendo infraestrutura e pipelines do que entregando valor de negócio.
-
+### 🟡🔴 Tier 2 & 3: Medium/Large (Commercial SaaS, Core Platform, 1+ Squads)
+- **Frontend:** **Clean MVVM with Strict Page Segregation**:
+  - **In Pages (`src/pages/`):** Mandatory Quartet pattern (`.base.tsx` [Composition Root], `.controller.tsx` [ViewModel], `.view.tsx` [Dumb UI], `.styles.ts` [Isolated styles]).
+  - **In Components (`src/components/`, `src/design-system/`):** Direct 1-file components (Quartet strictly forbidden to avoid file fatigue).
+- **Backend:** **Clean Architecture with Anemic Domain** (Total cognitive symmetry with Frontend, avoiding microservices by default).
+- **Persistence & Communications:** Centralized relational database (PostgreSQL), OpenAPI contracts, in-memory domain events.
+- **What Scales:**
+  - Multiple engineers working simultaneously without Git merge conflicts.
+  - Testability (use cases and controllers tested in pure Node with 100% mockable interfaces).
+  - Safe refactoring and long-term evolvability.
+- **What Does NOT Scale:**
+  - Attempting to use this for throwaway 1-week prototypes (produces unnecessary initial friction).

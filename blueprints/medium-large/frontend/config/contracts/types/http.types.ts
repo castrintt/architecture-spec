@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 /**
- * 1. Tipo nativo cru (Payload HTTP)
+ * 1. Raw Native Network Types
  */
 export type RawHttpHeaders = Record<string, string>;
 
 /**
- * 2. Schema Zod de Resposta HTTP Genérica
+ * 2. Generic HTTP Response Zod Schema
  */
 export const HttpResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   z.object({
@@ -15,10 +15,9 @@ export const HttpResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   });
 
 /**
- * 3. Tipos inferidos e nativos exportados
+ * 3. Exported Inferred & Native Interface
  */
 export interface HttpResponse<T> {
   data: T;
   status: number;
 }
-

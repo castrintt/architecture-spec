@@ -1,18 +1,18 @@
-# 🟡🔴 Blueprint: Backend para Projetos Médios e Grandes (Clean Architecture com Domínio Anêmico)
+# 🟡🔴 Blueprint: Backend for Medium & Large Projects (Clean Architecture with Anemic Domain)
 
-Este blueprint reflete a mesma arquitetura do Frontend corporativo, adaptada para o contexto de servidor (onde não existe View, e a camada `src/` atua como entrega/apresentação HTTP).
-
----
-
-## 🎯 Filosofia: Domínio Anêmico na Clean Architecture
-
-Neste padrão, as **Entidades de Domínio são anêmicas** (portadoras de dados e estado puro). 
-- A entidade **não possui métodos de regra de negócio** (`order.confirm()`, validações de crédito, etc.).
-- Toda a lógica de negócio, orquestração e transições de estado residem exclusivamente nos **Casos de Uso** (`business/application/use-cases/`).
+This blueprint mirrors the corporate Frontend architecture, adapted for server-side execution (where there is no View, and the `src/` layer acts as the HTTP Delivery/Presentation layer).
 
 ---
 
-## 🏗️ Mapa Completo de Camadas
+## 🎯 Philosophy: Anemic Domain in Clean Architecture
+
+In this architecture, **Domain Entities are anemic** (pure carriers of data and state).
+- The entity **contains zero business logic methods** (`order.confirm()`, credit validations, etc.).
+- All business rules, orchestration, and state transitions reside exclusively inside **Use Cases** (`business/application/use-cases/`).
+
+---
+
+## 🏗️ Complete Layer Map
 
 ```text
 backend/
@@ -24,40 +24,40 @@ backend/
 │   │   │   └── types/
 │   │   │       └── order-status.types.ts         # RawOrderStatus + OrderStatusSchema (Zod)
 │   │   └── entities/
-│   │       └── order.entity.ts                   # Entidade Anêmica (Estado puro, zero métodos)
+│   │       └── order.entity.ts                   # Anemic Entity (Pure state, zero methods)
 │   │
 │   ├── application/
 │   │   ├── contracts/
 │   │   │   ├── interfaces/
 │   │   │   │   └── create-order-use-case.interface.ts # ICreateOrderUseCase
 │   │   │   └── types/
-│   │   │       └── create-order.types.ts         # Schemas Zod de Entrada/Saída + Tipagem inferida
+│   │   │       └── create-order.types.ts         # Zod Input/Output schemas + inferred types
 │   │   └── use-cases/
-│   │       └── create-order.use-case.ts          # Toda a regra de negócio aplicada
+│   │       └── create-order.use-case.ts          # Applied business rules
 │   │
 │   ├── repository/
 │   │   ├── contracts/
 │   │   │   ├── interfaces/
-│   │   │   │   └── order-repository.interface.ts # IOrderRepository (Port de saída)
+│   │   │   │   └── order-repository.interface.ts # IOrderRepository (Outbound Port)
 │   │   │   └── types/
 │   │   │       └── repository.types.ts           # DbOrderRowSchema
 │   │   └── repositories/
-│   │       └── order.postgres.repository.ts      # Adaptador concreto de banco (PostgreSQL)
+│   │       └── order.postgres.repository.ts      # Concrete database adapter (PostgreSQL)
 │   │
 │   └── ioc/
-│       ├── types.ts                               # Tokens de injeção TYPES (Symbol.for)
-│       └── container.ts                           # Inversify Container (bind de interfaces I...)
+│       ├── types.ts                               # Inversify TYPES tokens (Symbol.for)
+│       └── container.ts                           # Inversify Container (binds I... interfaces)
 │
-├── src/                                           # Camada de Entrega / Apresentação HTTP
+├── src/                                           # HTTP Delivery / Presentation Layer
 │   ├── controllers/
-│   │   └── order.controller.ts                    # Injeta UseCase via Inversify + safeParseWithLogging
+│   │   └── order.controller.ts                    # Injects UseCase via Inversify + safeParseWithLogging
 │   ├── routes/
-│   │   └── order.routes.ts                        # Registro de endpoints REST
+│   │   └── order.routes.ts                        # REST endpoint registrations
 │   ├── middlewares/
-│   │   └── auth.middleware.ts                     # Guards de autenticação e RBAC
-│   └── index.ts                                   # Bootstrap Fastify e Healthchecks
+│   │   └── auth.middleware.ts                     # Authentication & RBAC guards
+│   └── index.ts                                   # Fastify Bootstrap & Healthchecks
 │
-├── config/                                        # Fachadas (Facades) para infraestrutura
+├── config/                                        # Infrastructure Facades
 │   ├── contracts/
 │   │   ├── interfaces/
 │   │   │   ├── database-facade.interface.ts       # IDatabaseFacade
@@ -69,20 +69,20 @@ backend/
 │       ├── database.facade.ts                     # MockPostgresDatabaseFacade
 │       └── logger.facade.ts                       # JsonLoggerFacade
 │
-└── utils/                                         # Funções puras globais
-    ├── schema-validator.ts                        # safeParseWithLogging com severidades (Zod)
-    └── id-generator.ts                            # Geração de IDs padronizados de domínio
+└── utils/                                         # Pure Global Utilities
+    ├── schema-validator.ts                        # safeParseWithLogging with severities (Zod)
+    └── id-generator.ts                            # Domain-prefixed ID generator
 ```
 
 ---
 
-## ⚖️ O que escala vs. O que não escala
+## ⚖️ What Scales vs. What Does NOT Scale
 
-- **O que escala:**
-  - **Simetria Cognitiva Total com o Front:** Quem desenvolve no Front sabe exatamente onde encontrar as coisas no Back (camadas `business`, `config`, `contracts/interfaces`, `contracts/types`, `utils`).
-  - **Facilidade com Domínio Anêmico:** Integração natural com bancos de dados relacionais e ORMs (Prisma, Drizzle, Kysely), evitando atrito de mapeamento entre classes ricas e tabelas relacionais.
-  - **Testabilidade:** Casos de uso podem ser testados de forma 100% unitária passando mocks das interfaces `IOrderRepository` e `ILoggerFacade`.
-  - **Deploy Simples:** Roda como monólito modular em container único com transações ACID.
+- **What Scales:**
+  - **Total Cognitive Symmetry with Frontend:** Developers moving between Front and Back immediately know where files and contracts reside (`business`, `config`, `contracts/interfaces`, `contracts/types`, `utils`).
+  - **Frictionless Anemic Domain:** Natural integration with modern relational databases and ORMs (Prisma, Drizzle, Kysely), eliminating object-relational mapping impedance mismatches.
+  - **Testability:** Use Cases are 100% unit-testable in pure Node by supplying mocks of `IOrderRepository` and `ILoggerFacade`.
+  - **Operational Simplicity:** Runs as a modular monolith in a single container with native ACID transactions.
 
-- **O que NÃO escala:**
-  - Se for aplicado a um CRUD descartável de 1 semana (Tier 1: Small), onde o monólito minimalista de 1 arquivo resolve mais rápido.
+- **What Does NOT Scale:**
+  - Overkill for disposable 1-week prototypes (Tier 1: Small), where a 1-file monolith ships faster.

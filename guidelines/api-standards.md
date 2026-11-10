@@ -1,32 +1,32 @@
-# 🌐 Diretrizes de API (API Standards)
+# 🌐 API Standards Guidelines
 
-Diretriz corporativa aplicável a todos os Tiers (Small, Medium e Large). O objetivo é garantir consistência para clientes e ferramentas de observabilidade.
+Baseline corporate guideline applicable across all project tiers (Small and Medium/Large). Ensures consistency for client applications, SDK generators, and observability systems.
 
 ---
 
-## 1. Padrão de Resposta de Erros (RFC 7807 - Problem Details)
+## 1. Standard Error Envelope (RFC 7807 - Problem Details)
 
-Nenhuma API deve retornar strings soltas ou formatos ad-hoc para erros (`{ "error": "msg" }`). Utilize a especificação RFC 7807:
+No API endpoint may return plain unstructured strings or ad-hoc error formats (`{ "error": "msg" }`). All errors must adhere to the RFC 7807 specification:
 
 ```json
 {
-  "type": "https://api.empresa.com/errors/resource-not-found",
-  "title": "Recurso não encontrado",
+  "type": "https://api.company.com/errors/resource-not-found",
+  "title": "Resource Not Found",
   "status": 404,
-  "detail": "O pedido #12345 não foi localizado para a conta informada.",
+  "detail": "Order #12345 was not found for the specified account.",
   "instance": "/orders/12345",
   "code": "ORDER_NOT_FOUND",
-  "timestamp": "2026-11-09T14:00:00Z"
+  "timestamp": "2026-11-10T14:00:00Z"
 }
 ```
 
 ---
 
-## 2. Paginação Obrigatória
+## 2. Mandatory Pagination
 
-Nenhum endpoint de listagem pode retornar listas infinitas sem limite explícito.
-- **Padrão Paginado:** `page` e `limit` (ou cursor-based para grandes volumes no Tier 3).
-- **Limite Máximo:** O servidor deve forçar `limit = min(request.limit, 100)`.
+No list endpoint may return unbounded collections.
+- **Query Parameters:** `page` and `limit` (or cursor-based pagination for high-volume endpoints).
+- **Upper Bound Enforcement:** The backend must clamp limits via `limit = Math.min(request.limit, 100)`.
 
 ```json
 {
@@ -42,7 +42,6 @@ Nenhum endpoint de listagem pode retornar listas infinitas sem limite explícito
 
 ---
 
-## 3. Idempotência em Mutações Críticas
+## 3. Idempotency on Critical Mutations
 
-Para endpoints de criação/pagamento (`POST /payments`, `POST /orders`), exija o header `Idempotency-Key: <UUIDv4>`. Se a mesma chave for reenviada em até 24h, a API deve retornar a mesma resposta sem reprocessar.
-
+For payment or transaction creation endpoints (`POST /payments`, `POST /orders`), clients must supply an `Idempotency-Key: <UUIDv4>` header. Replaying the identical key within 24 hours must return the cached initial response without re-executing the operation.

@@ -11,16 +11,14 @@ interface CheckoutBaseProps {
 }
 
 /**
- * Camada Base (Composition Root / Container de Injeção):
- * - É o arquivo consumido pela tabela de rotas ('src/routes/routes.ts').
- * - Resolve dependências a partir do container InversifyJS ('business/ioc/container.ts').
- * - Injeta instâncias no Controller e envelopa a View passando 'states' e 'actions'.
+ * Base Component (Composition Root / Injection Container):
+ * - Consumed by the routing table ('src/routes/routes.ts').
+ * - Resolves interface dependencies from InversifyJS container.
+ * - Injects instances into the Controller and wraps the View passing 'states' and 'actions'.
  */
 export function CheckoutBase({ orderId = 'ord_9876', totalCents = 15990 }: CheckoutBaseProps) {
-  // Resolve o gateway via contrato de interface no Inversify Container
   const orderGateway = container.get<IOrderApiGateway>(TYPES.OrderApiGateway);
 
-  // Adaptador de serviço conectando o gateway ao controller
   const serviceAdapter = {
     confirmPayment: async (id: string) => {
       await orderGateway.createOrder({ items: [{ id, qty: 1 }] });
@@ -33,7 +31,7 @@ export function CheckoutBase({ orderId = 'ord_9876', totalCents = 15990 }: Check
     totalCents,
     service: serviceAdapter,
     onPaymentSuccess: (trxId) => {
-      console.info(`[Payment Flow] Transação aprovada: ${trxId}`);
+      console.info(`[Payment Flow] Transaction approved: ${trxId}`);
     },
   });
 

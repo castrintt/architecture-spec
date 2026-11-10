@@ -1,17 +1,16 @@
 import { z } from 'zod';
 
 /**
- * 1. Tipo Cru Nativo de Status
+ * 1. Raw Native Status Type
  */
 export type RawOrderStatus = 'PENDING' | 'CONFIRMED' | 'CANCELED';
 
 /**
- * 2. Schema Zod de Status do Pedido
+ * 2. Zod Status Validation Schema
  */
 export const OrderStatusSchema = z.enum(['PENDING', 'CONFIRMED', 'CANCELED']);
 
 /**
- * 3. Tipo inferido do Zod
+ * 3. Inferred Zod Type
  */
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
-

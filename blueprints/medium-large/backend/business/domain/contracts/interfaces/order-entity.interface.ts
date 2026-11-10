@@ -1,8 +1,8 @@
 import { OrderStatus } from '../types/order-status.types.js';
 
 /**
- * Contrato de Interface para a Entidade de Domínio (Domínio Anêmico)
- * Apenas propriedades de dados. Toda a lógica reside nos Use Cases da camada Application.
+ * Interface contract for Domain Entity (Anemic Domain Pattern)
+ * Contains pure data attributes. All logic resides in Use Cases inside Application layer.
  */
 export interface IOrderEntity {
   id: string;
@@ -11,4 +11,3 @@ export interface IOrderEntity {
   status: OrderStatus;
   createdAt: Date;
 }
-

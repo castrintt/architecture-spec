@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 /**
- * 1. Schemas Zod de Entrada e Saída do Caso de Uso
+ * 1. Zod Schemas for Use Case Input and Output
  */
 export const CreateOrderInputSchema = z.object({
-  customerId: z.string().min(1, 'ID do cliente é obrigatório'),
-  totalCents: z.number().int().positive('O valor total do pedido deve ser maior que zero'),
+  customerId: z.string().min(1, 'Customer ID is required'),
+  totalCents: z.number().int().positive('Order total cents must be greater than zero'),
 });
 
 export const CreateOrderOutputSchema = z.object({
@@ -14,9 +14,8 @@ export const CreateOrderOutputSchema = z.object({
 });
 
 /**
- * 2. Tipagem inferida exportada junto com tipos nativos
+ * 2. Inferred and Native Types
  */
 export type CreateOrderInput = z.infer<typeof CreateOrderInputSchema>;
 export type CreateOrderOutput = z.infer<typeof CreateOrderOutputSchema>;
 export type RawCreateOrderRequest = { customerId: string; totalCents: number };
-

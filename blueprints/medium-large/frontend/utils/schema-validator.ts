@@ -3,11 +3,11 @@ import { z } from 'zod';
 export type LogSeverity = 'info' | 'warn' | 'error';
 
 export interface ValidateSchemaOptions {
-  /** Nome identificador da operação ou endpoint (ex: 'OrderApiGateway.fetchOrders') */
+  /** Identifier name for the operation or endpoint (e.g. 'OrderApiGateway.fetchOrders') */
   contextName: string;
-  /** Severidade a ser aplicada no log em caso de quebra de contrato. Padrão: 'error' */
+  /** Severity level to apply in logs upon contract violation. Default: 'error' */
   severity?: LogSeverity;
-  /** Se deve lançar exceção em caso de falha. Padrão: true */
+  /** Whether to throw an error on contract failure. Default: true */
   throwOnError?: boolean;
 }
 
@@ -17,16 +17,16 @@ export class SchemaValidationError extends Error {
     public readonly issues: z.ZodIssue[],
     public readonly rawData: unknown
   ) {
-    super(`[Contrato Violado em ${contextName}] O payload retornado pela API não respeita o Schema esperado.`);
+    super(`[Contract Violation in ${contextName}] The payload returned does not respect the expected Zod Schema.`);
     this.name = 'SchemaValidationError';
   }
 }
 
 /**
- * Função utilitária pura para executar validação com safeParse do Zod
- * embuída com logging estruturado e severidades padronizadas.
+ * Pure utility function to execute Zod safeParse validation
+ * embedded with structured logging and standardized severities.
  *
- * Localizada na camada mais externa (utils/) para ser acessível a qualquer gateway ou serviço.
+ * Located in the outermost layer (utils/) to be accessible to any gateway or service.
  */
 export function safeParseWithLogging<T>(
   schema: z.ZodType<T>,
@@ -52,9 +52,9 @@ export function safeParseWithLogging<T>(
     };
 
     if (severity === 'warn') {
-      console.warn(`⚠️ [${contextName}] Divergência no Schema Zod detectada:`, JSON.stringify(errorDetails));
+      console.warn(`⚠️ [${contextName}] Zod Schema Divergence Detected:`, JSON.stringify(errorDetails));
     } else {
-      console.error(`🚨 [${contextName}] Falha Crítica de Contrato Zod detectada:`, JSON.stringify(errorDetails));
+      console.error(`🚨 [${contextName}] Critical Zod Contract Failure Detected:`, JSON.stringify(errorDetails));
     }
 
     if (throwOnError) {
@@ -64,4 +64,3 @@ export function safeParseWithLogging<T>(
 
   return (result as { success: true; data: T }).data;
 }
-
