@@ -1,0 +1,18 @@
+# Dependências e Builds
+node_modules/
+dist/
+build/
+.turbo/
+
+# Projetos gerados pelo wizard
+output-projects/
+
+# Variáveis de ambiente
+.env
+.env.local
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
